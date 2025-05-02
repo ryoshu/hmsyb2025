@@ -5,8 +5,9 @@ TODOs
 - Need graphics and sounds
 - Scoreboard
 ---
+
 | Name | Class | Notes |
-| ---- | ----- |  |
+| ---- | ----- | ----- |
 | Wire Circuit | Aurora |  |
 | * | Celestial Blue |  |
 | Roots of Innovation | Comet | This is super cute. |
