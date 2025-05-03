@@ -9,14 +9,14 @@ TODOs
 | Name | Class | Notes |
 | ---- | ----- | ----- |
 | Wire Circuit | Aurora |  |
-| * | Celestial Blue |  |
+| Block Stack | Celestial Blue |  |
 | Roots of Innovation | Comet | This is super cute. |
 | Drum Simon | Constellation | Game state gets weird on failure. Needs a win condition or score? |
 | Laser Mirror Puzzle | Galaxy | Great. |
 | Geyser | Harmious Orange | Great. |
 | Virus Battle | Middle School | Remove modal alert. |
 | Tornado Catcher | Ocean Blue | Remove modal alert. Is there an end to it? |
-| * | Orange Blossom |  |
+| Match the planets | Orange Blossom |  |
 | Find the Image | Peaceful Ivory | Feels like there's a event that's being broadcast twice? |
 | Click the Stars | Rosy Red | Add a timer to make a score. |
 | Bridge Surfer | Serene Indigo | Gameplay doesn't make sense. Player moves too slowly. |
