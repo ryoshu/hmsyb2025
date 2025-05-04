@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import VirtualJoystick from 'phaser3-rex-plugins/plugins/virtualjoystick.js';
 
 export class GameMiddleSchool extends Phaser.Scene {
   constructor() {
@@ -46,8 +47,90 @@ export class GameMiddleSchool extends Phaser.Scene {
       callbackScope: this,
       loop: true,
     });
+
+    // this.createVirtualJoystick();
+    // this.setCursorDebugInfo();
+    // this.updateJoystickState();
+  }
+  /*
+  createVirtualJoystick() {
+    this.joyStick = this.plugins.get('rex-virtual-joystick-plugin"').add(
+        this,
+        Object.assign({}, this.joystickConfig, {
+            radius: 32,
+            base: this.add.image(0, 0, 'base').setDisplaySize(110, 110),
+            thumb: this.add.image(0, 0, 'thumb').setDisplaySize(48, 48)
+        })
+    ).on('update', this.updateJoystickState, this);
+    this.cursorKeys = this.joyStick.createCursorKeys();
+
+    // Listener event to reposition virtual joystick
+    // whatever place you click in game area
+    this.input.on('pointerdown', pointer => {
+        this.joyStick.x = pointer.x;
+        this.joyStick.y = pointer.y;
+        this.joyStick.base.x = pointer.x;
+        this.joyStick.base.y = pointer.y;
+        this.joyStick.thumb.x = pointer.x;
+        this.joyStick.thumb.y = pointer.y;
+    });
+
+    // Listener event to return virtual 
+    // joystick to its original position
+    this.input.on('pointerup', pointer => {
+        this.joyStick.x = this.staticXJsPos;
+        this.joyStick.y = this.staticYJsPos;
+        this.joyStick.base.x = this.staticXJsPos;
+        this.joyStick.base.y = this.staticYJsPos;
+        this.joyStick.thumb.x = this.staticXJsPos;
+        this.joyStick.thumb.y = this.staticYJsPos;
+        this.lastCursorDirection = "center";
+        this.setCursorDebugInfo();
+    });
+
+  }
+  
+  setCursorDebugInfo() {
+    const force = Math.floor(this.joyStick.force * 100) / 100;
+    const angle = Math.floor(this.joyStick.angle * 100) / 100;
+    let text = `Direction: ${this.lastCursorDirection}\n`;
+    text += `Force: ${force}\n`;
+    text += `Angle: ${angle}\n`;
+    text += `FPS: ${this.sys.game.loop.actualFps}\n`;
+    this.cursorDebugText.setText(text);
   }
 
+  updateJoystickState() {
+    let direction = '';
+    for (let key in this.cursorKeys) {
+        if (this.cursorKeys[key].isDown) {
+          direction += key;
+        }
+    }
+
+    // If no direction if provided then stop 
+    // the player animations and exit the method
+    if(direction.length === 0) { 
+        this.stopPlayerAnimations();
+        return;
+    }
+
+    // If last cursor direction is different
+    //  the stop all player animations
+    if (this.lastCursorDirection !== direction) {
+        this.stopPlayerAnimations();
+    }
+    
+    // Set the new cursor direction
+    this.lastCursorDirection = direction;
+
+    // Handle the player moving
+    this.movePlayer();
+
+    // Set debug info about the cursor
+    this.setCursorDebugInfo();
+  }
+  */
   update(time, delta) {
     if (this.gameWon) return;
 
