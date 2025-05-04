@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wire Circuit Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+    }
+    .grid {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .column {
+      width: 45%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .selected {
+      background-color: #d3d3d3;
+    }
+    #message {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    /* Color hints for solution */
+    .color-0 { background-color: #ffd966 !important; }
+    .color-1 { background-color: #a4c2f4 !important; }
+    .color-2 { background-color: #b6d7a8 !important; }
+
+    /* Flash animations */
+    @keyframes flashGreen {
+      0% { background-color: #b6d7a8; }
+      100% { background-color: inherit; }
+    }
+    @keyframes flashRed {
+      0% { background-color: #f4cccc; }
+      100% { background-color: inherit; }
+    }
+    .flash-correct { animation: flashGreen 0.5s ease; }
+    .flash-wrong { animation: flashRed 0.5s ease; }
+
+    /* SVG overlay */
+    #lines-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Wire Circuit Game</h1>
+  <div class="grid">
+    <div class="column" id="wire-column">
+      <h2>Wires</h2>
+      <button onclick="selectWire('A')" id="wire-A">A</button>
+      <button onclick="selectWire('B')" id="wire-B">B</button>
+      <button onclick="selectWire('C')" id="wire-C">C</button>
+    </div>
+    <div class="column" id="terminal-column">
+      <h2>Terminals</h2>
+      <button onclick="connectToTerminal('1')" id="terminal-1">1</button>
+      <button onclick="connectToTerminal('2')" id="terminal-2">2</button>
+      <button onclick="connectToTerminal('3')" id="terminal-3">3</button>
+    </div>
+    <svg id="lines-svg"></svg>
+  </div>
+  <button onclick="checkCircuit()">Check Circuit</button>
+  <button onclick="resetGame()">🔄 Reset Game</button>
+  <p id="message"></p>
+
+  <script>
+    const wires = ['A', 'B', 'C'];
+    const terminals = ['1', '2', '3'];
+    let correctConnections = [];
+    let currentConnections = [];
+    let selectedWire = null;
+
+    function shuffle(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function resetGame() {
+      const shuffled = shuffle(terminals);
+      correctConnections = wires.map((wire, index) => ({
+        from: wire,
+        to: shuffled[index],
+      }));
+      currentConnections = [];
+      selectedWire = null;
+      document.getElementById('message').textContent = '';
+      wires.forEach(w => document.getElementById(`wire-${w}`).classList.remove('selected'));
+      showColoredSolution();
+      clearLines();
+    }
+
+    function selectWire(wire) {
+      selectedWire = wire;
+      wires.forEach(w => {
+        document.getElementById(`wire-${w}`).classList.toggle('selected', w === wire);
+      });
+      document.getElementById('message').textContent = '';
+    }
+
+    function connectToTerminal(terminal) {
+      if (!selectedWire) return;
+
+      // Remove any existing connection from this wire
+      currentConnections = currentConnections.filter(c => c.from !== selectedWire);
+
+      // Add new connection
+      currentConnections.push({ from: selectedWire, to: terminal });
+
+      const isCorrect = correctConnections.some(c => c.from === selectedWire && c.to === terminal);
+      const termBtn = document.getElementById(`terminal-${terminal}`);
+      termBtn.classList.remove('flash-correct', 'flash-wrong');
+      void termBtn.offsetWidth;
+      termBtn.classList.add(isCorrect ? 'flash-correct' : 'flash-wrong');
+
+      drawLines();
+
+      selectedWire = null;
+      wires.forEach(w => document.getElementById(`wire-${w}`).classList.remove('selected'));
+    }
+
+    function checkCircuit() {
+      const isCorrect = correctConnections.every(correct =>
+        currentConnections.find(c => c.from === correct.from && c.to === correct.to)
+      );
+      document.getElementById('message').textContent = isCorrect
+        ? '✅ Circuit Complete!'
+        : '❌ Incorrect Wiring';
+    }
+
+    function showColoredSolution() {
+      const colors = ['color-0', 'color-1', 'color-2'];
+      wires.forEach(w => {
+        const wireBtn = document.getElementById(`wire-${w}`);
+        colors.forEach(c => wireBtn.classList.remove(c));
+      });
+      terminals.forEach(t => {
+        const termBtn = document.getElementById(`terminal-${t}`);
+        colors.forEach(c => termBtn.classList.remove(c));
+      });
+      correctConnections.forEach((conn, index) => {
+        const colorClass = colors[index % colors.length];
+        document.getElementById(`wire-${conn.from}`).classList.add(colorClass);
+        document.getElementById(`terminal-${conn.to}`).classList.add(colorClass);
+      });
+    }
+
+    function drawLines() {
+      clearLines();
+      const svg = document.getElementById('lines-svg');
+
+      currentConnections.forEach(conn => {
+        const wireBtn = document.getElementById(`wire-${conn.from}`);
+        const termBtn = document.getElementById(`terminal-${conn.to}`);
+
+        const wireRect = wireBtn.getBoundingClientRect();
+        const termRect = termBtn.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+
+        const x1 = wireRect.right - svgRect.left;
+        const y1 = wireRect.top + wireRect.height / 2 - svgRect.top;
+        const x2 = termRect.left - svgRect.left;
+        const y2 = termRect.top + termRect.height / 2 - svgRect.top;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x1);
+        line.setAttribute("y1", y1);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        line.setAttribute("stroke-width", 3);
+
+        const isCorrect = correctConnections.some(c => c.from === conn.from && c.to === conn.to);
+        line.setAttribute("stroke", isCorrect ? "green" : "red");
+
+        svg.appendChild(line);
+      });
+    }
+
+    function clearLines() {
+      const svg = document.getElementById('lines-svg');
+      while (svg.firstChild) {
+        svg.removeChild(svg.firstChild);
+      }
+    }
+
+    // Initialize
+    window.addEventListener('resize', drawLines);
+    resetGame();
+  </script>
+</body>
+</html>

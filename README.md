@@ -9,7 +9,7 @@ TODOs
 | Name | Class | Notes |
 | ---- | ----- | ----- |
 | Wire Circuit | Aurora |  |
-| Block Stack | Celestial Blue |  |
+| Block Stack | Celestial Blue | Needs scoring and/or win condition |
 | Roots of Innovation | Comet | This is super cute. |
 | Drum Simon | Constellation | Game state gets weird on failure. Needs a win condition or score? |
 | Laser Mirror Puzzle | Galaxy | Great. |

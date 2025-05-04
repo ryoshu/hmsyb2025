@@ -16,17 +16,21 @@ export class MainMenu extends Scene
         const baseY = 200;
 
         for(let i = 0; i < GAMES.length; ++i) { 
-            let x = centerX - 300;
-            let y = baseY + (50 * i);
+            let x = centerX - 500;
+            let y = baseY + (100 * i);
 
             console.log(i + ">" + Math.floor(GAMES.length * .5));
             if(i > Math.floor(GAMES.length * .5)) {
-                x = centerX + 150;
-                y = baseY + (50 * (i % Math.floor(GAMES.length * .5)));
+                x = centerX + 50;
+                y = baseY + (100 * (i % Math.floor(GAMES.length * .5)));
             }
-            const toddlerGameButton = this.add.text(x, y, GAMES[i].name, { fill: '#0f0' });
-            toddlerGameButton.setInteractive();
-            toddlerGameButton.on('pointerdown', () => { 
+            const gameButton = this.add.text(x, y, GAMES[i].name, { 
+                fill: '#0f0',
+                fontFamily: 'Arial Black', 
+                fontSize: 38
+            });
+            gameButton.setInteractive();
+            gameButton.on('pointerdown', () => { 
                 this.scene.start(GAMES[i].name); 
             });   
         }

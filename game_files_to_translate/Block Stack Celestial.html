@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Block Stack Pattern Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 50px);
+      grid-template-rows: repeat(5, 50px);
+      gap: 2px;
+    }
+    .cell {
+      width: 50px;
+      height: 50px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .controls {
+      margin: 20px 0;
+    }
+    .selected {
+      border: 2px solid black;
+    }
+    .block-btn {
+      font-size: 20px;
+      padding: 8px 12px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🧱 Block Stack Pattern Game</h1>
+
+<div class="controls">
+  Select a block:
+  <button class="block-btn" onclick="selectBlock('🟥')">🟥</button>
+  <button class="block-btn" onclick="selectBlock('🟦')">🟦</button>
+  <button class="block-btn" onclick="selectBlock('🟩')">🟩</button>
+</div>
+
+<div class="container">
+  <div>
+    <h3>Your Stack</h3>
+    <div id="playerGrid" class="grid"></div>
+  </div>
+  <div>
+    <h3>Target Pattern</h3>
+    <div id="targetGrid" class="grid"></div>
+  </div>
+</div>
+
+<button onclick="checkPattern()">✅ Check Pattern</button>
+<p id="resultMsg"></p>
+
+<script>
+  const size = 5;
+  let selectedBlock = '🟥';
+
+  const targetGrid = Array.from({ length: size }, () => Array(size).fill(''));
+  const playerGrid = Array.from({ length: size }, () => Array(size).fill(''));
+
+  function selectBlock(block) {
+    selectedBlock = block;
+    document.querySelectorAll('.block-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.textContent === block);
+    });
+  }
+
+  function generateTargetPattern() {
+    // Random stacked pattern with gravity logic
+    for (let x = 0; x < size; x++) {
+      const height = Math.floor(Math.random() * 4) + 1;
+      const block = ['🟥', '🟦', '🟩'][Math.floor(Math.random() * 3)];
+      for (let y = size - 1; y >= size - height; y--) {
+        targetGrid[y][x] = block;
+      }
+    }
+  }
+
+  function renderGrid(gridData, gridId, isPlayer = false) {
+    const gridEl = document.getElementById(gridId);
+    gridEl.innerHTML = '';
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = gridData[y][x];
+        if (isPlayer) {
+          cell.onclick = () => placeBlock(x);
+        }
+        gridEl.appendChild(cell);
+      }
+    }
+  }
+
+  function placeBlock(x) {
+    for (let y = size - 1; y >= 0; y--) {
+      if (playerGrid[y][x] === '') {
+        playerGrid[y][x] = selectedBlock;
+        break;
+      }
+    }
+    renderGrid(playerGrid, 'playerGrid', true);
+  }
+
+  function checkPattern() {
+    let match = true;
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        if (targetGrid[y][x] !== playerGrid[y][x]) {
+          match = false;
+        }
+      }
+    }
+    document.getElementById('resultMsg').textContent = match
+      ? '🎉 Pattern Matched!'
+      : '❌ Try Again!';
+  }
+
+  generateTargetPattern();
+  renderGrid(targetGrid, 'targetGrid');
+  renderGrid(playerGrid, 'playerGrid', true);
+  selectBlock('🟥'); // Default
+</script>
+
+</body>
+</html>

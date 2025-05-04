@@ -1,28 +1,60 @@
-import { Scene } from 'phaser';
+import Phaser from 'phaser';
 
-export class GameRosyRed extends Scene
-{
-    constructor ()
-    {
-        super('GameRosyRed');
+export class GameRosyRed extends Phaser.Scene {
+  constructor() {
+    super({ key: 'GameRosyRed' });
+    this.score = 0;
+    this.maxScore = 10;
+    this.starsOnScreen = 3;
+  }
+
+  create() {
+    // Set background color
+    this.cameras.main.setBackgroundColor('#000');
+
+    // Add message text
+    this.message = this.add.text(10, 10, 'Click 10 stars to win!', {
+      fontSize: '24px',
+      color: '#fff',
+    });
+
+    // Spawn initial stars
+    for (let i = 0; i < this.starsOnScreen; i++) {
+      this.spawnStar();
     }
+  }
 
-    create ()
-    {
-        this.cameras.main.setBackgroundColor(0x00ff00);
+  spawnStar() {
+    if (this.score >= this.maxScore) return;
 
-        this.add.image(512, 384, 'background').setAlpha(0.5);
+    // Generate random position for the star
+    const x = Phaser.Math.Between(60, this.cameras.main.width - 60);
+    const y = Phaser.Math.Between(60, this.cameras.main.height - 60);
 
-        this.add.text(512, 384, 'Rosy Red', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
+    // Draw the star using Phaser's graphics
+    const star = this.add.star(x, y, 5, 20, 40, 0xffff00).setInteractive();
 
-        this.input.once('pointerdown', () => {
+    // Add click event to the star
+    star.on('pointerdown', () => {
+      this.score++;
+      star.destroy(); // Remove the star
+      this.message.setText(`Stars clicked: ${this.score}`);
 
-            this.scene.start('GameOver');
+      if (this.score >= this.maxScore) {
+        this.message.setText('You win! 🎉');
+        this.clearRemainingStars();
+      } else {
+        this.spawnStar(); // Keep the number of stars constant
+      }
+    });
+  }
 
-        });
-    }
+  clearRemainingStars() {
+    // Remove all remaining stars
+    this.children.list.forEach((child) => {
+      if (child.type === 'Star') {
+        child.destroy();
+      }
+    });
+  }
 }

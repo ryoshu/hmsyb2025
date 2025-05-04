@@ -5,6 +5,7 @@ export class Game extends Scene
     constructor ()
     {
         super('Game');
+        this.won = false;
     }
 
     create ()

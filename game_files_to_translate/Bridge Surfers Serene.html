@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRIDGE SURFERS</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      background: #87CEEB;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #e0e0e0;
+      overflow: hidden;
+    }
+
+    #player {
+      position: absolute;
+      bottom: 50px;
+      left: 50px;
+      width: 50px;
+      height: 50px;
+      background-color: #f00;
+    }
+
+    .obstacle {
+      position: absolute;
+      top: 0;
+      right: -150px;
+      width: 150px;
+      height: 150px;
+      background-color: #000;
+    }
+
+    .win-screen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: bold;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      border-radius: 15px;
+      z-index: 999;
+    }
+
+    #score-counter {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 10px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div id="score-counter">Score: 0</div>
+
+  <div id="game-container">
+    <div id="player"></div>
+    <div class="obstacle"></div>
+    <div class="obstacle"></div>
+    <div class="obstacle"></div>
+  </div>
+
+  <script>
+    let player = document.getElementById('player');
+    let obstacles = document.querySelectorAll('.obstacle');
+    let gameContainer = document.getElementById('game-container');
+    let scoreCounter = document.getElementById('score-counter');
+
+    let playerSpeed = 5;
+    let playerPosition = { bottom: 50 };
+    let obstacleSpeed = 5;
+    let gameWidth = gameContainer.offsetWidth;
+    let gameHeight = gameContainer.offsetHeight;
+
+    let blocksPassed = 0;
+    let score = 0;
+    let hasWon = false;
+
+    let obstaclesData = [];
+
+    obstacles.forEach((obstacle, index) => {
+      obstaclesData.push({
+        element: obstacle,
+        speed: obstacleSpeed,
+        top: Math.floor(Math.random() * (gameHeight - 150)),
+        right: -150 * (index + 1)
+      });
+    });
+
+    document.addEventListener('keydown', movePlayer);
+
+    function movePlayer(event) {
+      if (event.key === 'ArrowUp' && playerPosition.bottom < gameHeight - 50) {
+        playerPosition.bottom += playerSpeed;
+      } else if (event.key === 'ArrowDown' && playerPosition.bottom > 0) {
+        playerPosition.bottom -= playerSpeed;
+      }
+      player.style.bottom = playerPosition.bottom + 'px';
+    }
+
+    function moveObstacles() {
+      if (hasWon) return;
+
+      obstaclesData.forEach((obstacleData) => {
+        obstacleData.right += obstacleData.speed;
+
+        if (obstacleData.right >= gameWidth) {
+          blocksPassed++;
+
+          if (blocksPassed % 3 === 0) {
+            score++;
+            scoreCounter.innerText = "Score: " + score;
+
+            if (score >= 10 && !hasWon) {
+              hasWon = true;
+              showWinScreen();
+            }
+          }
+
+          obstacleData.right = -150;
+          obstacleData.top = Math.floor(Math.random() * (gameHeight - 150));
+        }
+
+        obstacleData.element.style.right = obstacleData.right + 'px';
+        obstacleData.element.style.top = obstacleData.top + 'px';
+
+        if (checkCollision(obstacleData.element)) {
+          alert('Game Over!');
+          resetGame();
+        }
+      });
+    }
+
+    function checkCollision(obstacleElement) {
+      let playerRect = player.getBoundingClientRect();
+      let obstacleRect = obstacleElement.getBoundingClientRect();
+
+      return !(playerRect.right < obstacleRect.left ||
+               playerRect.left > obstacleRect.right ||
+               playerRect.top > obstacleRect.bottom ||
+               playerRect.bottom < obstacleRect.top);
+    }
+
+    function resetGame() {
+      playerPosition = { bottom: 50 };
+      player.style.bottom = playerPosition.bottom + 'px';
+
+      blocksPassed = 0;
+      score = 0;
+      hasWon = false;
+      scoreCounter.innerText = "Score: 0";
+
+      let winScreen = document.querySelector('.win-screen');
+      if (winScreen) winScreen.remove();
+
+      obstaclesData.forEach((obstacleData) => {
+        obstacleData.right = -150;
+        obstacleData.top = Math.floor(Math.random() * (gameHeight - 150));
+        obstacleData.element.style.right = obstacleData.right + 'px';
+        obstacleData.element.style.top = obstacleData.top + 'px';
+      });
+    }
+
+    function showWinScreen() {
+      let winDiv = document.createElement('div');
+      winDiv.classList.add('win-screen');
+      winDiv.innerText = "🎉 YOU WIN! 🎉";
+      gameContainer.appendChild(winDiv);
+    }
+
+    setInterval(moveObstacles, 20);
+  </script>
+</body>
+</html>

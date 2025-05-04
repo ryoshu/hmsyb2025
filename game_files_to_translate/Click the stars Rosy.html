@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Star Clicker Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      font-family: sans-serif;
+      color: white;
+      text-align: center;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .star {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: yellow;
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%, 68% 57%, 
+        79% 91%, 50% 70%, 21% 91%, 32% 57%, 
+        2% 35%, 39% 35%
+      );
+      cursor: pointer;
+    }
+
+    #message {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="message">Click 10 stars to win!</div>
+  </div>
+
+  <script>
+    const container = document.getElementById('game-container');
+    const message = document.getElementById('message');
+    let score = 0;
+    const maxScore = 10;
+    const starsOnScreen = 3;
+
+    function spawnStar() {
+      if (score >= maxScore) return;
+
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+      star.style.top = Math.random() * (window.innerHeight - 60) + 'px';
+
+      star.addEventListener('click', () => {
+        score++;
+        star.remove();
+        message.textContent = `Stars clicked: ${score}`;
+        if (score >= maxScore) {
+          message.textContent = 'You win! 🎉';
+          // Optionally, remove remaining stars
+          document.querySelectorAll('.star').forEach(s => s.remove());
+        } else {
+          spawnStar(); // Keep the number of stars constant
+        }
+      });
+
+      container.appendChild(star);
+    }
+
+    // Spawn initial set of stars
+    for (let i = 0; i < starsOnScreen; i++) {
+      spawnStar();
+    }
+  </script>
+</body>
+</html>

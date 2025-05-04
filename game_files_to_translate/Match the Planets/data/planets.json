@@ -1,0 +1,62 @@
+[
+    {
+        "image": "assets/mercury.png", 
+        "name": "mercury",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/venus.png", 
+        "name": "venus",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/earth.png", 
+        "name": "earth",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/mars.png", 
+        "name": "mars",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/jupiter.png", 
+        "name": "jupiter",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/saturn.png", 
+        "name": "saturn",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/uranus.png", 
+        "name": "uranus",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/neptune.png", 
+        "name": "neptune",
+        "type": "planet"
+    }, 
+    {
+        "image": "assets/moon.png", 
+        "name": "moon",
+        "type": "moon"
+    }, 
+    {
+        "image": "assets/europa.png", 
+        "name": "europa",
+        "type": "moon"
+    }, 
+    {
+        "image": "assets/ganymede.png", 
+        "name": "ganymede",
+        "type": "moon"
+    }, 
+    {
+        "image": "assets/titan.png", 
+        "name": "titan",
+        "type": "moon"
+    }
+]

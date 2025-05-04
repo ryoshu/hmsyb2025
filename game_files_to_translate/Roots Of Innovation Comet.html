@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>From Fire To Electricity- Comet</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #fce5cd;
+    }
+    #container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    /* Game 1 Styles */
+    #game1 {
+      padding: 40px;
+    }
+    #fire-btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #ff9900;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    #fire-btn:active {
+      transform: scale(0.95);
+    }
+    #message {
+      font-size: 24px;
+      margin-top: 30px;
+    }
+    .fire {
+      font-size: 60px;
+      margin-top: 20px;
+    }
+
+    /* Game 2 Styles */
+    #game2 {
+      display: none;
+    }
+    #game {
+      position: relative;
+      width: 400px;
+      height: 500px;
+      margin: 0 auto;
+      border: 2px solid #ccc;
+      background: #f9f9f9;
+    }
+    .component {
+      position: absolute;
+      width: 160px;
+      height: 100px;
+      border: 2px solid #333;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px;
+      flex-direction: column;
+      z-index: 1;
+    }
+    .label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .terminal-group {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 10px;
+    }
+    .terminal-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .terminal {
+      width: 25px;
+      height: 25px;
+      background: #2d3436;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-top: 3px;
+    }
+    .bulb {
+      top: 50px;
+      left: 120px;
+      background: #ffeaa7;
+    }
+    .battery {
+      top: 300px;
+      left: 120px;
+      background: #dfe6e9;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    #winScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 400px;
+      height: 500px;
+      background-color: rgba(0, 255, 0, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      font-weight: bold;
+      color: green;
+      z-index: 2;
+      display: none;
+    }
+
+    /* Transition overlay (fixed and full height) */
+    .overlay {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      height: 100%;
+      background-color: black;
+      z-index: 999;
+      pointer-events: none;
+      transition: transform 0.6s ease-in-out;
+    }
+    .overlay.left {
+      left: 0;
+      transform: translateX(-100%);
+    }
+    .overlay.right {
+      right: 0;
+      transform: translateX(100%);
+    }
+    .overlay.active.left {
+      transform: translateX(0%);
+    }
+    .overlay.active.right {
+      transform: translateX(0%);
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <!-- Game 1 -->
+    <div id="game1">
+      <h1>Can You Light the Fire?</h1>
+      <button id="fire-btn" onclick="strikeMatch()">🔥 Strike Match</button>
+      <p id="message">Keep trying...</p>
+      <div id="fire-icon" class="fire"></div>
+    </div>
+
+    <!-- Game 2 -->
+    <div id="game2">
+      <h2>Connect Battery to Bulb</h2>
+      <p>Click a battery terminal, then the matching lightbulb terminal</p>
+
+      <div id="game">
+        <canvas id="lineCanvas" width="400" height="500"></canvas>
+
+        <div id="winScreen">🎉 You Win! 🎉</div>
+
+        <!-- Lightbulb -->
+        <div class="component bulb">
+          <div class="label">Lightbulb</div>
+          <div class="terminal-group">
+            <div class="terminal-container">
+              <span>+</span>
+              <div class="terminal" data-type="positive" data-side="bulb" title="Bulb +"></div>
+            </div>
+            <div class="terminal-container">
+              <span>−</span>
+              <div class="terminal" data-type="negative" data-side="bulb" title="Bulb -"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Battery -->
+        <div class="component battery">
+          <div class="label">Battery</div>
+          <div class="terminal-group">
+            <div class="terminal-container">
+              <span>+</span>
+              <div class="terminal" data-type="positive" data-side="battery" title="Battery +"></div>
+            </div>
+            <div class="terminal-container">
+              <span>−</span>
+              <div class="terminal" data-type="negative" data-side="battery" title="Battery -"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transition overlays -->
+    <div class="overlay left"></div>
+    <div class="overlay right"></div>
+  </div>
+
+  <script>
+    // Game 1 logic
+    let attempts = 0;
+    const maxStrikes = Math.floor(Math.random() * 5) + 2;
+
+    function strikeMatch() {
+      attempts++;
+      if (attempts >= maxStrikes) {
+        document.getElementById("message").textContent = "🔥 Fire is lit!";
+        document.getElementById("fire-icon").textContent = "🔥🔥🔥";
+        document.getElementById("fire-btn").disabled = true;
+        document.getElementById("fire-btn").style.backgroundColor = "#888";
+        startTransition();
+      } else {
+        document.getElementById("message").textContent = `You struck the match... (${attempts})`;
+      }
+    }
+
+    // Transition to Game 2
+    function startTransition() {
+      const left = document.querySelector(".overlay.left");
+      const right = document.querySelector(".overlay.right");
+
+      left.classList.add("active");
+      right.classList.add("active");
+
+      setTimeout(() => {
+        document.getElementById("game1").style.display = "none";
+        document.getElementById("game2").style.display = "block";
+
+        // Open transition
+        left.classList.remove("active");
+        right.classList.remove("active");
+      }, 1000);
+    }
+
+    // Game 2 logic
+    let selectedTerminal = null;
+    const terminals = document.querySelectorAll('.terminal');
+    const canvas = document.getElementById('lineCanvas');
+    const ctx = canvas.getContext('2d');
+    const winScreen = document.getElementById('winScreen');
+    let connections = { positive: false, negative: false };
+
+    terminals.forEach(term => {
+      term.addEventListener('click', () => {
+        if (!selectedTerminal) {
+          if (term.dataset.side === 'battery') {
+            selectedTerminal = term;
+            term.style.background = '#00b894';
+          }
+        } else {
+          if (term.dataset.side === 'bulb') {
+            if (term.dataset.type === selectedTerminal.dataset.type) {
+              drawLineBetween(selectedTerminal, term);
+              connections[term.dataset.type] = true;
+              checkWin();
+            } else {
+              alert('Wrong terminal! Try again.');
+            }
+            selectedTerminal.style.background = '#2d3436';
+            selectedTerminal = null;
+          }
+        }
+      });
+    });
+
+    function getCenterPosition(el) {
+      const rect = el.getBoundingClientRect();
+      const parentRect = canvas.getBoundingClientRect();
+      return {
+        x: rect.left - parentRect.left + rect.width / 2,
+        y: rect.top - parentRect.top + rect.height / 2
+      };
+    }
+
+    function drawLineBetween(startEl, endEl) {
+      const start = getCenterPosition(startEl);
+      const end = getCenterPosition(endEl);
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
+      ctx.strokeStyle = '#0984e3';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function checkWin() {
+      if (connections.positive && connections.negative) {
+        winScreen.style.display = 'flex';
+      }
+    }
+  </script>
+</body>
+</html>

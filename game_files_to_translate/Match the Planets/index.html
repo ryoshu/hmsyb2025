@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Space Memory Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="instructions-screen">
+        <h1>Welcome to the Space Memory Game!</h1>
+        <p>Click on planets and moons to select them. Match two of the same to make them disappear!</p>
+        <p>Clear all matches before time runs out to win!</p>
+        <button onclick="startGame()">Start Level 1</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div class="header">
+            <h2 id="level-title"></h2>
+            <h2 id="timer">Time: </h2>
+            <h3 id="message"></h3>
+        </div>
+        <div id="space-container"></div>
+    </div>
+
+    <div id="victory-screen" class="hidden">
+        <h1>Level Complete!</h1>
+        <div id="stars">
+            <h2 id="level-score"></h2> 
+        </div>
+        <h2 id="cooldown-timer"></h2>
+        <div id="victory-buttons" class="hidden">
+            <button onclick="nextLevel()">Next Level</button>
+            <button onclick="resetLevel()">Reset Level</button>
+            <button onclick="backToInstructions()">Back to Instructions</button>
+        </div>
+    </div>
+
+    <div id="final-screen" class="hidden">
+        <h1>Congratulations! 🎉</h1>
+        <div id="final-stars">
+            ⭐ ⭐ ⭐
+        </div>
+        <h2>You matched all planets and moons!</h2>
+        <button onclick="backToInstructions()">Play Again</button>
+    </div>
+
+    <audio id="chime" src="assets/chime.mp3"></audio>
+    <audio id="buzzer" src="assets/buzzer.mp3"></audio>
+
+    <script src="action.js"></script>
+
+</body>
+</html>

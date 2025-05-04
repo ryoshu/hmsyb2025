@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geyser Click Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        #geyser-container {
+            position: relative;
+            width: 200px;
+            height: 400px;
+            background-color: #87ceeb;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #4682b4;
+            margin-bottom: 20px;
+        }
+
+        #geyser {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #00bfff;
+            transition: height 0.1s;
+        }
+
+        #geyser-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        #geyser-button:hover {
+            background-color: #ff4500;
+        }
+
+        #message {
+            font-size: 1.5rem;
+            color: #ff6347;
+            margin-top: 10px;
+        }
+
+        #timer {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Click the Geyser to Keep it Under Control!</h1>
+    <div id="geyser-container">
+        <div id="geyser"></div>
+    </div>
+    <button id="geyser-button">Click to Lower the Geyser</button>
+    <div id="timer">Time Left: 10.0s</div>
+    <div id="message"></div>
+
+    <script>
+        let geyserHeight = 0;
+        const geyserElement = document.getElementById('geyser');
+        const messageElement = document.getElementById('message');
+        const geyserButton = document.getElementById('geyser-button');
+        const timerElement = document.getElementById('timer');
+        const maxHeight = 100;
+
+        let interval = setInterval(increaseGeyserHeight, 100);
+
+        let winTimer = 0;
+        let winInterval = setInterval(checkWinCondition, 100);
+        const winTime = 10000;
+
+        function increaseGeyserHeight() {
+            if (geyserHeight < maxHeight) {
+                geyserHeight += 2;
+                geyserElement.style.height = geyserHeight + '%';
+            } else {
+                gameOver();
+            }
+        }
+
+        geyserButton.addEventListener('click', () => {
+            if (geyserHeight > 0) {
+                geyserHeight -= 10;
+                if (geyserHeight < 0) geyserHeight = 0;
+                geyserElement.style.height = geyserHeight + '%';
+            }
+        });
+
+        function gameOver() {
+            clearInterval(interval);
+            clearInterval(winInterval);
+            messageElement.textContent = "Game Over! The geyser overflowed!";
+            geyserButton.disabled = true;
+            timerElement.textContent = "";
+        }
+
+        function youWin() {
+            clearInterval(interval);
+            clearInterval(winInterval);
+            messageElement.textContent = "You Win! You kept the geyser under control!";
+            geyserButton.disabled = true;
+            timerElement.textContent = "";
+        }
+
+        function checkWinCondition() {
+            if (geyserHeight < maxHeight) {
+                winTimer += 100;
+                let timeLeft = ((winTime - winTimer) / 1000).toFixed(1);
+                timerElement.textContent = `Time Left: ${timeLeft}s`;
+                if (winTimer >= winTime) {
+                    youWin();
+                }
+            } else {
+                winTimer = 0;
+                timerElement.textContent = `Time Left: 10.0s`;
+            }
+        }
+    </script>
+</body>
+</html>

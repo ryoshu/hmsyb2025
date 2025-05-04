@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drum Simon Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
+    }
+
+    .game-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #drum-container {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+    }
+
+    .drum {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #ddd;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .drum:active {
+      transform: scale(0.9);
+    }
+
+    #message {
+      margin-bottom: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #win-screen {
+      font-size: 30px;
+      color: green;
+    }
+
+    #start-btn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    #start-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Drum Simon Game</h1>
+    <div id="drum-container">
+      <div class="drum" id="drum-1"></div>
+      <div class="drum" id="drum-2"></div>
+      <div class="drum" id="drum-3"></div>
+      <div class="drum" id="drum-4"></div>
+    </div>
+    <div id="message"></div>
+    <div id="win-screen" style="display: none;">
+      <h2>You Win!</h2>
+    </div>
+    <button id="start-btn">Start Game</button>
+  </div>
+
+  <script>
+    const drumSounds = [
+      new Audio('https://www.soundjay.com/button/beep-07.wav'), // Drum 1
+      new Audio('https://www.soundjay.com/button/beep-08b.wav'), // Drum 2
+      new Audio('https://www.soundjay.com/button/beep-09.wav'), // Drum 3
+      new Audio('https://www.soundjay.com/button/beep-10.wav')  // Drum 4
+    ];
+
+    let gamePattern = [];
+    let playerPattern = [];
+    let level = 0;
+    let isGameActive = false;
+
+    const drums = document.querySelectorAll('.drum');
+    const message = document.getElementById('message');
+    const winScreen = document.getElementById('win-screen');
+    const startBtn = document.getElementById('start-btn');
+
+    function nextSequence() {
+      playerPattern = [];
+      const randomIndex = Math.floor(Math.random() * 4);
+      gamePattern.push(randomIndex);
+      playPattern();
+      message.textContent = `Level ${level + 1}`;  // Display current level
+    }
+
+    function playPattern() {
+      gamePattern.forEach((index, i) => {
+        setTimeout(() => {
+          animateDrum(index);
+          drumSounds[index].play();
+        }, 600 * i);
+      });
+    }
+
+    function animateDrum(index) {
+      drums[index].style.backgroundColor = '#4CAF50';
+      setTimeout(() => {
+        drums[index].style.backgroundColor = '#ddd';
+      }, 300);
+    }
+
+    function checkAnswer(currentLevel) {
+      if (playerPattern[currentLevel] === gamePattern[currentLevel]) {
+        if (playerPattern.length === gamePattern.length) {
+          level++;
+          if (level === 5) {
+            showWinScreen();
+          } else {
+            setTimeout(nextSequence, 1000);
+          }
+        }
+      } else {
+        message.textContent = 'Wrong! Try again.';
+        setTimeout(startGame, 1500);
+      }
+    }
+
+    function userClick(index) {
+      if (!isGameActive) return;
+
+      playerPattern.push(index);
+      animateDrum(index);
+      drumSounds[index].play();
+
+      checkAnswer(playerPattern.length - 1);
+    }
+
+    function startGame() {
+      isGameActive = true;
+      gamePattern = [];
+      playerPattern = [];
+      level = 0;
+      message.textContent = 'Get Ready!';
+      winScreen.style.display = 'none';  // Hide win screen when starting new game
+      setTimeout(nextSequence, 1000);
+    }
+
+    function showWinScreen() {
+      message.textContent = '';
+      winScreen.style.display = 'block';
+      isGameActive = false; // Stop the game
+    }
+
+    drums.forEach((drum, index) => {
+      drum.addEventListener('click', () => userClick(index));
+    });
+
+    startBtn.addEventListener('click', () => {
+      startGame();
+    });
+  </script>
+</body>
+</html>

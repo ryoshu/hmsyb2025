@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Hunt Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f7f7f7;
+      padding: 20px;
+    }
+
+    #gameContainer {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 10px;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+
+    .imageBox img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .imageBox img:hover {
+      transform: scale(1.05);
+      border-color: #333;
+    }
+
+    #targetImage {
+      margin: 20px 0;
+      font-size: 20px;
+    }
+
+    #targetImage img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 3px solid #333;
+    }
+
+    #score {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    #result {
+      font-size: 20px;
+      height: 30px;
+      margin-top: 10px;
+    }
+
+    #winScreen {
+      display: none;
+      font-size: 28px;
+      margin-top: 30px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="targetImage">Find this image: <img id="imageToFind" src="" alt="Target"></div>
+
+  <div id="gameContainer"></div>
+
+  <div id="score">Score: 0</div>
+  <div id="result"></div>
+  <div id="winScreen">🎉 You Win! 🎉</div>
+
+  <script>
+    const imageSources = [
+      'https://cdn.creazilla.com/cliparts/1991338/pyramids-clipart-xl.png',
+      'https://cdn.creazilla.com/cliparts/30858/melindak-roman-colosseum-clipart-xl.png',
+      'https://img.freepik.com/free-vector/ancient-mayan-pyramid-cartoon-icon-white-background-vector-illustration_1284-66707.jpg',
+      'https://classroomclipart.com/image/static2/preview2/ancient-rome-column-architectural-clipart-10672.jpg',
+      'https://cdn.creazilla.com/cliparts/63381/great-wall-of-china-clipart-md.png',
+      'https://img.freepik.com/premium-vector/stonehenge-stones-clipart-vector-art-illustration_761413-36803.jpg?w=360',
+      'https://classroomclipart.com/image/static7/preview2/ancient-chinese-pagoda-61315.jpg',
+      'https://media.istockphoto.com/id/1616156815/vector/taj-mahal-icon-travel-landmarks-design-illustration.jpg?s=612x612&w=0&k=20&c=juv3EaV_2C6S_-dUTpz3rG4SaGAiM-QDM5l5JIZc8KQ=',
+      'https://cdn.creazilla.com/cliparts/14480/petra-clipart-md.png',
+      'https://media.istockphoto.com/id/1409321044/vector/djinguereber-mosque-in-timbuktu-mali.jpg?s=612x612&w=0&k=20&c=hN_KUIOsaH0i0aIZbDuPa-S8gyvm95vY8wPxDbJU9Bc='
+    ];
+
+    let score = 0;
+    let targetImageSrc = '';
+    const totalBoxes = 25;
+    const imageToFind = document.getElementById('imageToFind');
+    const scoreDisplay = document.getElementById('score');
+    const resultDisplay = document.getElementById('result');
+    const gameContainer = document.getElementById('gameContainer');
+    const winScreen = document.getElementById('winScreen');
+    const targetImageDiv = document.getElementById('targetImage');
+
+    function getRandomImage() {
+      return imageSources[Math.floor(Math.random() * imageSources.length)];
+    }
+
+    function generateGameBoard() {
+      gameContainer.innerHTML = '';
+      const imageList = [];
+
+      for (let i = 0; i < totalBoxes; i++) {
+        const imgSrc = getRandomImage();
+        imageList.push(imgSrc);
+
+        const box = document.createElement('div');
+        box.classList.add('imageBox');
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = 'Image';
+        img.addEventListener('click', () => handleClick(imgSrc));
+        box.appendChild(img);
+        gameContainer.appendChild(box);
+      }
+
+      const randomIndex = Math.floor(Math.random() * imageList.length);
+      targetImageSrc = imageList[randomIndex];
+      imageToFind.src = targetImageSrc;
+    }
+
+    function handleClick(clickedSrc) {
+      if (clickedSrc === targetImageSrc) {
+        score++;
+        resultDisplay.innerText = 'Correct!';
+        resultDisplay.style.color = 'green';
+        scoreDisplay.innerText = 'Score: ' + score;
+
+        if (score >= 10) {
+          winScreen.style.display = 'block';
+          gameContainer.style.display = 'none';
+          targetImageDiv.style.display = 'none';
+          return;
+        }
+
+        setTimeout(() => {
+          resultDisplay.innerText = '';
+          generateGameBoard();
+        }, 1000);
+      } else {
+        resultDisplay.innerText = 'Incorrect! Try again.';
+        resultDisplay.style.color = 'red';
+
+        setTimeout(() => {
+          resultDisplay.innerText = '';
+        }, 1000);
+      }
+    }
+
+    // Start the game
+    generateGameBoard();
+  </script>
+
+</body>
+</html>
