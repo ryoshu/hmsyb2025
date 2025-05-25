@@ -8,17 +8,31 @@ export class GameConstellation extends Phaser.Scene {
     this.level = 0;
     this.isGameActive = false;
     this.drumSounds = [];
+    this.startButton = null;
   }
 
   preload() {
     // Load drum sounds
-    this.load.audio('drum1', 'https://www.soundjay.com/button/beep-07.wav');
-    this.load.audio('drum2', 'https://www.soundjay.com/button/beep-08b.wav');
-    this.load.audio('drum3', 'https://www.soundjay.com/button/beep-09.wav');
-    this.load.audio('drum4', 'https://www.soundjay.com/button/beep-10.wav');
+    this.load.audio('drum1', './assets/CON-1.1.mp3');
+    this.load.audio('drum2', './assets/CON-2.1.mp3');
+    this.load.audio('drum3', './assets/CON-3.1.mp3');
+    this.load.audio('drum4', './assets/CON-4.1.mp3');
+    
+    // Load drum images
+    this.load.image('drumImg1', 'assets/CON-1.png');
+    this.load.image('drumImg2', 'assets/CON-2.png');
+    this.load.image('drumImg3', 'assets/CON-3.png');
+    this.load.image('drumImg4', 'assets/CON-4.png');
   }
 
   create() {
+    // Add black background
+    // this.add.rectangle(0, 0, this.sys.game.config.width, this.sys.game.config.height, 0x000000).setOrigin(0, 0);
+
+    // Get game dimensions for centering
+    const centerX = this.cameras.main.width / 2;
+    const centerY = this.cameras.main.height / 2;
+    
     // Add drum sounds to the scene
     this.drumSounds = [
       this.sound.add('drum1'),
@@ -27,29 +41,39 @@ export class GameConstellation extends Phaser.Scene {
       this.sound.add('drum4'),
     ];
 
-    // Create drums
+    // Create drums with images, centered horizontally
     this.drums = [];
+    const drumSpacing = 240; // Spacing between drums
+    const totalWidth = (4 - 1) * drumSpacing; // Total width of all drums
+    const startX = centerX - totalWidth / 2; // Starting X position for centering
+    
     for (let i = 0; i < 4; i++) {
-      const drum = this.add.circle(200 + i * 150, 300, 50, 0xdddddd).setInteractive();
+      const drum = this.add.image(startX + i * drumSpacing, centerY, `drumImg${i + 1}`).setInteractive();
+      const drumSize = 200;
+      drum.setDisplaySize(drumSize, drumSize);
+
+      // Scale drums if needed (adjust this value as needed)
+      //drum.setScale(0.8);
+      
       drum.on('pointerdown', () => this.userClick(i));
       this.drums.push(drum);
     }
 
-    // Add text for messages
-    this.message = this.add.text(400, 100, 'Press Start', {
-      fontSize: '24px',
-      color: '#000',
+    // Add text for messages, centered above drums
+    this.message = this.add.text(centerX, centerY - 250, 'Follow the pattern!', {
+      fontSize: '48px',
+      color: '#000000',
     }).setOrigin(0.5);
 
-    // Add start button
-    const startButton = this.add.text(400, 500, 'Start Game', {
-      fontSize: '32px',
+    // Add start button, centered below drums
+    this.startButton = this.add.text(centerX, centerY + 250, 'Start Game', {
+      fontSize: '48px',
       color: '#4CAF50',
       backgroundColor: '#ffffff',
       padding: { x: 10, y: 5 },
     }).setOrigin(0.5).setInteractive();
 
-    startButton.on('pointerdown', () => this.startGame());
+    this.startButton.on('pointerdown', () => this.startGame());
   }
 
   nextSequence() {
@@ -71,9 +95,10 @@ export class GameConstellation extends Phaser.Scene {
 
   animateDrum(index) {
     const drum = this.drums[index];
-    drum.setFillStyle(0x4CAF50);
+    // Create a highlight effect by tinting the drum
+    drum.setTint(0x4CAF50);
     this.time.delayedCall(300, () => {
-      drum.setFillStyle(0xdddddd);
+      drum.clearTint();
     });
   }
 
@@ -110,6 +135,7 @@ export class GameConstellation extends Phaser.Scene {
     this.level = 0;
     this.message.setText('Get Ready!');
     this.time.delayedCall(1000, () => this.nextSequence());
+    this.startButton.setVisible(false); // Hide the start button
   }
 
   showWinScreen() {

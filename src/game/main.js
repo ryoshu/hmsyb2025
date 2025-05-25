@@ -38,6 +38,9 @@ const config = {
             gravity: { y: 0 },
             debug: true
         }
+    },
+    render: {
+        transparent: true
     }
 };
 

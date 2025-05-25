@@ -6,14 +6,15 @@ export class GameOceanBlue extends Phaser.Scene {
   }
 
   preload() {
-    // Preload assets if needed (e.g., images for player or tornadoes)
+    // Load the tornado sprite
+    this.load.image('tornado', './assets/OB-2.png');
   }
 
   create() {
     // Add message text
     this.message = this.add.text(0, 0, 'Catch the tornadoes!', {
       fontSize: '48px',
-      color: '#fff',
+      color: '#000000',
     });
     
     // Center the message text
@@ -41,7 +42,8 @@ export class GameOceanBlue extends Phaser.Scene {
     const playAreaHeight = this.scale.height - 50; // 50px padding at the bottom
 
     // Add background color
-    this.cameras.main.setBackgroundColor('#87CEEB');
+    // this.cameras.main.setBackgroundColor('#87CEEB');
+    this.cameras.main.setBackgroundColor('#ffffff');
 
     // Create player
     this.player = this.add.rectangle(playAreaWidth / 2, playAreaHeight - 50, 50, 50, 0x0000ff);
@@ -149,11 +151,18 @@ export class GameOceanBlue extends Phaser.Scene {
   }
 
   createTornado() {
-    const size = Phaser.Math.Between(10, 30);
-    const x = Phaser.Math.Between(size, this.scale.width - size);
+    const scale = Phaser.Math.FloatBetween(0.1, 0.5); // Random scale for variety
     const speed = Phaser.Math.FloatBetween(1, 3);
 
-    const tornado = this.add.circle(x, -size, size, 0x000000);
+    // Create tornado sprite instead of circle
+    const tornado = this.add.image(0, 0, 'tornado');
+    tornado.setScale(scale);
+    
+    // Calculate spawn position based on tornado's actual width after scaling
+    const tornadoWidth = tornado.displayWidth;
+    const x = Phaser.Math.Between(tornadoWidth / 2, this.scale.width - tornadoWidth / 2);
+    tornado.setPosition(x, -tornado.displayHeight / 2);
+    
     this.physics.add.existing(tornado);
     tornado.speed = speed;
 
@@ -176,7 +185,7 @@ export class GameOceanBlue extends Phaser.Scene {
         tornado.destroy();
         this.tornadoes.splice(index, 1);
 
-        if (this.caughtCount === 1) {
+        if (this.caughtCount === 10) {
           this.gameWin();
         }
       }
