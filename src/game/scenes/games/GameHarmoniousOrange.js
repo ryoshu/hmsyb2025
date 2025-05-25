@@ -6,117 +6,154 @@ export class GameHarmoniousOrange extends Phaser.Scene {
     }
 
     preload() {
-        // Preload assets if needed (e.g., images for geyser, button, etc.)
+        // No assets to preload
     }
 
     create() {
-        this.add.text(400, 50, 'Click the Geyser to Keep it Under Control!', {
-            fontSize: '24px',
-            color: '#000',
-        }).setOrigin(0.5);
-
-        // Geyser container
-        this.geyserContainer = this.add.rectangle(400, 300, 200, 400, 0x87ceeb);
-        this.geyserContainer.setStrokeStyle(2, 0x4682b4);
-
-        // Geyser
-        this.geyser = this.add.rectangle(400, 500, 200, 0, 0x00bfff);
         this.geyserHeight = 0;
         this.maxHeight = 400;
-
-        // Timer text
-        this.timerText = this.add.text(400, 550, 'Time Left: 10.0s', {
-            fontSize: '18px',
-            color: '#333',
-        }).setOrigin(0.5);
-
-        // Message text
-        this.messageText = this.add.text(400, 600, '', {
-            fontSize: '24px',
-            color: '#ff6347',
-        }).setOrigin(0.5);
-
-        // Geyser button
-        this.geyserButton = this.add.rectangle(400, 700, 200, 50, 0xff6347)
-            .setInteractive()
-            .on('pointerdown', this.lowerGeyser, this);
-        this.add.text(400, 700, 'Click to Lower the Geyser', {
-            fontSize: '16px',
-            color: '#fff',
-        }).setOrigin(0.5);
-
-        // Game variables
-        this.winTime = 10000; // 10 seconds
         this.winTimer = 0;
-        this.gameOverFlag = false;
+        this.winTime = 10000;
+        this.gameActive = true;
 
-        // Start the game loop
-        this.time.addEvent({
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+
+        // Set up the container
+        this.geyserContainer = this.add.graphics();
+        this.geyserContainer.lineStyle(4, 0x4682b4);
+        this.geyserContainer.fillStyle(0x87ceeb);
+        this.geyserContainer.fillRect(centerX - 200, centerY - 600, 400, 800);
+        this.geyserContainer.strokeRect(centerX - 200, centerY - 600, 400, 800);
+
+        // Set up the geyser
+        this.geyser = this.add.graphics();
+        this.updateGeyser();
+
+        // Set up the button background
+        const buttonWidth = 400; // Default width for the button
+        const buttonHeight = 50;
+        const buttonBg = this.add.rectangle(centerX, centerY + 250, buttonWidth, buttonHeight, 0xff6347);
+        buttonBg.setInteractive({ useHandCursor: true });
+        buttonBg.on('pointerdown', this.lowerGeyser, this);
+
+        // Set up the button text
+        const buttonText = this.add.text(centerX, centerY + 250, 'Click to Lower the Geyser', {
+            font: '24px',
+            fill: '#ffffff'
+        }).setOrigin(0.5);
+
+        // Ensure the text is rendered above the button background
+        buttonText.setDepth(1);
+
+        // Set up the timer text
+        this.timerText = this.add.text(centerX, centerY + 320, 'Time Left: 10.0s', {
+            font: '20px',
+            fill: '#333333'
+        }).setOrigin(0.5);
+
+        // Set up the message text
+        this.messageText = this.add.text(centerX, centerY + 350, '', {
+            font: '24px',
+            fill: '#ff6347'
+        }).setOrigin(0.5);
+
+        // Start the geyser increase timer
+        this.increaseTimer = this.time.addEvent({
             delay: 100,
             callback: this.increaseGeyserHeight,
             callbackScope: this,
-            loop: true,
+            loop: true
         });
 
-        this.time.addEvent({
+        // Start the win condition check timer
+        this.winCheckTimer = this.time.addEvent({
             delay: 100,
             callback: this.checkWinCondition,
             callbackScope: this,
-            loop: true,
+            loop: true
         });
     }
 
-    increaseGeyserHeight() {
-        if (this.gameOverFlag) return;
+    updateGeyser() {
+        this.geyser.clear();
+        this.geyser.fillStyle(0x00bfff);
+        const heightPixels = (this.geyserHeight / 200) * 800;
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+        this.geyser.fillRect(centerX - 200, centerY + 200 - heightPixels, 400, heightPixels);
+    }
 
-        if (this.geyserHeight < this.maxHeight) {
-            this.geyserHeight = Math.min(this.geyserHeight + 8, this.maxHeight); // Ensure it doesn't exceed maxHeight
-            this.geyser.height = this.geyserHeight;
-            this.geyser.y = 500 - this.geyserHeight / 2; // Adjust position
+    increaseGeyserHeight() {
+        if (!this.gameActive) return;
+        
+        if (this.geyserHeight < 200) {
+            this.geyserHeight += 4;
+            this.updateGeyser();
         } else {
             this.gameOver();
         }
     }
 
     lowerGeyser() {
-        if (this.gameOverFlag) return;
-
+        if (!this.gameActive) return;
+        
         if (this.geyserHeight > 0) {
-            this.geyserHeight = Math.max(this.geyserHeight - 40, 0); // Ensure it doesn't go below 0
-            this.geyser.height = this.geyserHeight;
-            this.geyser.y = 500 - this.geyserHeight / 2; // Adjust position
+            this.geyserHeight -= 10;
+            if (this.geyserHeight < 0) this.geyserHeight = 0;
+            this.updateGeyser();
         }
     }
 
     gameOver() {
-        this.gameOverFlag = true;
+        this.gameActive = false;
+        this.increaseTimer.remove();
+        this.winCheckTimer.remove();
         this.messageText.setText('Game Over! The geyser overflowed!');
         this.timerText.setText('');
-        this.geyserButton.disableInteractive();
+
+        // Reset game variables
+        this.geyserHeight = 0;
+        this.winTimer = 0;
+        this.updateGeyser();
+
+        // Restart the scene after a short delay
+        this.time.delayedCall(3000, () => {
+            this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+        });
     }
 
     youWin() {
-        this.gameOverFlag = true;
+        this.gameActive = false;
+        this.increaseTimer.remove();
+        this.winCheckTimer.remove();
         this.messageText.setText('You Win! You kept the geyser under control!');
         this.timerText.setText('');
-        this.geyserButton.disableInteractive();
+
+        // Reset game variables
+        this.geyserHeight = 0;
+        this.winTimer = 0;
+        this.updateGeyser();
+
+        // Restart the scene after a short delay
+        this.time.delayedCall(3000, () => {
+            this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+        });
     }
 
     checkWinCondition() {
-        if (this.gameOverFlag) return;
-
-        if (this.geyserHeight < this.maxHeight) {
+        if (!this.gameActive) return;
+        
+        if (this.geyserHeight < 200) {
             this.winTimer += 100;
-            const timeLeft = ((this.winTime - this.winTimer) / 1000).toFixed(1);
+            let timeLeft = ((this.winTime - this.winTimer) / 1000).toFixed(1);
             this.timerText.setText(`Time Left: ${timeLeft}s`);
-
             if (this.winTimer >= this.winTime) {
                 this.youWin();
             }
         } else {
-            // Reset win timer if the geyser overflows
             this.winTimer = 0;
-            this.timerText.setText('Time Left: 10.0s');
+            this.timerText.setText(`Time Left: 10.0s`);
         }
     }
 }

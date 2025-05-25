@@ -10,26 +10,47 @@ export class GameAurora extends Phaser.Scene {
   }
 
   create() {
+    const centerX = this.scale.width / 2;
+    const centerY = this.scale.height / 2;
+
     this.wires = ['A', 'B', 'C'];
     this.terminals = ['1', '2', '3'];
     this.correctConnections = [];
     this.currentConnections = [];
     this.selectedWire = null;
 
-    this.add.text(250, 20, 'Wire Circuit Game', { fontSize: '24px', color: '#000' }).setOrigin(0.5);
+    const heightPadding = 200;
+
+    this.add.text(centerX, 40, 'Wire Circuit Game', { fontSize: '48px', color: '#000' }).setOrigin(0.5);
+    this.instructionsText = this.add.text(
+      centerX,
+      120,
+      'Match the wire outputs on the left to the terminal inputs on the right.',
+      {
+        fontSize: '24px', // Adjust font size if needed
+        color: '#000',
+        wordWrap: { width: this.scale.width - 200 }, // Scene width minus 100px padding on both sides
+        align: 'center',
+      }
+    ).setOrigin(0.5);
 
     this.wireButtons = this.wires.map((wire, index) => {
-      return this.createButton(100, 100 + index * 50, wire, () => this.selectWire(wire));
+      return this.createButton(centerX - 400, 250 + index * heightPadding, wire, () => this.selectWire(wire));
     });
 
     this.terminalButtons = this.terminals.map((terminal, index) => {
-      return this.createButton(400, 100 + index * 50, terminal, () => this.connectToTerminal(terminal));
+      return this.createButton(centerX + 350, 250 + index * heightPadding, terminal, () => this.connectToTerminal(terminal));
     });
 
-    this.checkButton = this.createButton(250, 300, 'Check Circuit', () => this.checkCircuit());
-    this.resetButton = this.createButton(250, 350, 'Reset Game', () => this.resetGame());
+    // Adjust the positions of the buttons to be next to each other with 3px padding
+    const buttonSpacing = 3; // Space between the two buttons
+    const buttonWidth = 100; // Approximate width of each button
+    const totalWidth = buttonWidth * 2 + buttonSpacing;
 
-    this.messageText = this.add.text(250, 400, '', { fontSize: '18px', color: '#000' }).setOrigin(0.5);
+    this.checkButton = this.createButton((centerX - totalWidth / 2) - 300, centerY + 100, 'Check Circuit', () => this.checkCircuit());
+    this.resetButton = this.createButton((centerX + totalWidth / 2) - buttonWidth + 100, centerY + 100, 'Reset Game', () => this.resetGame());
+
+    this.messageText = this.add.text(centerX, centerY - 100, '', { fontSize: '28px', color: '#000' }).setOrigin(0.5);
 
     this.graphics = this.add.graphics();
     this.resetGame();
@@ -37,15 +58,13 @@ export class GameAurora extends Phaser.Scene {
 
   createButton(x, y, label, callback) {
     const button = this.add.text(x, y, label, {
-      fontSize: '16px',
+      fontSize: '48px',
       backgroundColor: '#d3d3d3',
-      padding: { x: 10, y: 5 },
+      padding: { x: 15, y: 15 }, // Adjust padding to make the button 50px wide and high
       color: '#000',
     })
       .setInteractive({ useHandCursor: true })
-      .on('pointerdown', callback)
-      .on('pointerover', () => button.setStyle({ backgroundColor: '#a9a9a9' }))
-      .on('pointerout', () => button.setStyle({ backgroundColor: '#d3d3d3' }));
+      .on('pointerdown', callback);
     return button;
   }
 
@@ -73,33 +92,67 @@ export class GameAurora extends Phaser.Scene {
   }
 
   selectWire(wire) {
+    // Reset all wire buttons to their original color
+    this.wireButtons.forEach(button => button.setStyle({ backgroundColor: '#d3d3d3' }));
+
+    // Highlight the selected wire button
+    const selectedButton = this.wireButtons.find(button => button.text === wire);
+    selectedButton.setStyle({ backgroundColor: '#a9a9a9' }); // Selected state color
+
     this.selectedWire = wire;
-    this.wireButtons.forEach(button => {
-      button.setStyle({ backgroundColor: button.text === wire ? '#a9a9a9' : '#d3d3d3' });
-    });
     this.messageText.setText('');
   }
 
   connectToTerminal(terminal) {
     if (!this.selectedWire) return;
 
+    const colors = ['#ffd966', '#a4c2f4', '#b6d7a8'];
+
+    // Reset the selected wire button to its original color
+    const selectedButton = this.wireButtons.find(button => button.text === this.selectedWire);
+    if (selectedButton) {
+        selectedButton.setStyle({ backgroundColor: '#d3d3d3' });
+    }
+
+    this.correctConnections.forEach((conn, index) => {
+      const color = colors[index % colors.length];
+      const wireButton = this.wireButtons.find(button => button.text === conn.from);
+      wireButton.setStyle({ backgroundColor: color });
+    });
+
+    // Update the current connections
     this.currentConnections = this.currentConnections.filter(c => c.from !== this.selectedWire);
     this.currentConnections.push({ from: this.selectedWire, to: terminal });
 
-    const isCorrect = this.correctConnections.some(c => c.from === this.selectedWire && c.to === terminal);
-    const terminalButton = this.terminalButtons.find(button => button.text === terminal);
-    terminalButton.setStyle({ backgroundColor: isCorrect ? '#b6d7a8' : '#f4cccc' });
-
+    // Draw the connection lines
     this.drawLines();
+
+    // Clear the selected wire
     this.selectedWire = null;
-    this.wireButtons.forEach(button => button.setStyle({ backgroundColor: '#d3d3d3' }));
   }
 
   checkCircuit() {
     const isCorrect = this.correctConnections.every(correct =>
       this.currentConnections.find(c => c.from === correct.from && c.to === correct.to)
     );
-    this.messageText.setText(isCorrect ? '✅ Circuit Complete!' : '❌ Incorrect Wiring');
+    if(isCorrect) {
+      this.gameWin();
+    } else {
+      this.messageText.setText('❌ Incorrect Wiring');
+    }
+    
+  }
+
+  gameWin() {
+    this.messageText.setText("✅ Circuit Complete! You're a circuit master!");
+
+    this.checkButton.visible = false;
+    this.resetButton.visible = false;
+
+    // Restart the scene after a short delay
+    this.time.delayedCall(3000, () => {
+      this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+    });
   }
 
   showColoredSolution() {

@@ -2,94 +2,209 @@ import Phaser from 'phaser';
 
 export class GamePeacefulIvory extends Phaser.Scene {
   constructor() {
-    super({ key: 'GamePeacefulIvory' });
-    this.imageSources = [
-      'https://cdn.creazilla.com/cliparts/1991338/pyramids-clipart-xl.png',
-      'https://cdn.creazilla.com/cliparts/30858/melindak-roman-colosseum-clipart-xl.png',
-      'https://img.freepik.com/free-vector/ancient-mayan-pyramid-cartoon-icon-white-background-vector-illustration_1284-66707.jpg',
-      'https://classroomclipart.com/image/static2/preview2/ancient-rome-column-architectural-clipart-10672.jpg',
-      'https://cdn.creazilla.com/cliparts/63381/great-wall-of-china-clipart-md.png',
-      'https://img.freepik.com/premium-vector/stonehenge-stones-clipart-vector-art-illustration_761413-36803.jpg?w=360',
-      'https://classroomclipart.com/image/static7/preview2/ancient-chinese-pagoda-61315.jpg',
-      'https://media.istockphoto.com/id/1616156815/vector/taj-mahal-icon-travel-landmarks-design-illustration.jpg?s=612x612&w=0&k=20&c=juv3EaV_2C6S_-dUTpz3rG4SaGAiM-QDM5l5JIZc8KQ=',
-      'https://cdn.creazilla.com/cliparts/14480/petra-clipart-md.png',
-      'https://media.istockphoto.com/id/1409321044/vector/djinguereber-mosque-in-timbuktu-mali.jpg?s=612x612&w=0&k=20&c=hN_KUIOsaH0i0aIZbDuPa-S8gyvm95vY8wPxDbJU9Bc='
-    ];
+    super('GamePeacefulIvory');
     this.score = 0;
-    this.targetImageSrc = '';
     this.totalBoxes = 25;
+    this.imageSources = [
+      '/assets/peaceful_ivory/pyramids-clipart-xl.png',
+      '/assets/peaceful_ivory/melindak-roman-colosseum-clipart-xl.png',
+      '/assets/peaceful_ivory/ancient-mayan-pyramid-cartoon-icon-white-background-vector-illustration_1284-66707.jpg',
+      '/assets/peaceful_ivory/ancient-rome-column-architectural-clipart-10672.jpg',
+      '/assets/peaceful_ivory/great-wall-of-china-clipart-md.png',
+      '/assets/peaceful_ivory/stonehenge-stones-clipart-vector-art-illustration_761413-36803.jpg',
+      '/assets/peaceful_ivory/ancient-chinese-pagoda-61315.jpg',
+      '/assets/peaceful_ivory/taj-mahal-icon-travel-landmarks-design-illustration.jpg',
+      '/assets/peaceful_ivory/petra-clipart-md.png',
+      '/assets/peaceful_ivory/djinguereber-mosque-in-timbuktu-mali.jpg'
+    ];
+    this.targetImageSrc = '';
+    this.resultDisplayTimer = null;
   }
 
   preload() {
-    // Preload all images
+    // Load all images
     this.imageSources.forEach((src, index) => {
-      this.load.image(`image${index}`, src);
+      this.load.image(`landmark${index}`, src);
     });
+    
+    // Load any additional assets
+    //this.load.image('background', 'https://phaser.io/images/tutorials/52/light-grass.png');
   }
 
   create() {
-    this.add.text(10, 10, 'Find this image:', { fontSize: '20px', fill: '#000' });
-    this.targetImage = this.add.image(100, 50, '').setScale(0.5).setOrigin(0.5);
+    // Remove the background image setup
+    // this.add.image(400, 300, 'background').setScale(2);
 
-    this.scoreText = this.add.text(10, 80, 'Score: 0', { fontSize: '24px', fill: '#000' });
-    this.resultText = this.add.text(10, 110, '', { fontSize: '20px', fill: '#000' });
-    this.winText = this.add.text(200, 300, '🎉 You Win! 🎉', { fontSize: '28px', fill: 'green' }).setVisible(false);
+    // Set up game container
+    this.createGameBoard();
 
-    this.gameContainer = this.add.container(0, 150);
-    this.generateGameBoard();
+    // Set up score display
+    this.scoreText = this.add.text(this.scale.width / 2, this.scale.height / 2 + 325, 'Score: 0', { 
+      fontSize: '24px', 
+      color: '#000000',
+      stroke: '#ffffff',
+      strokeThickness: 2
+    }).setOrigin(0.5);
+
+    // Result text display
+    this.resultText = this.add.text(this.scale.width / 2, this.scale.height - 20, '', { 
+      fontSize: '20px', 
+      stroke: '#ffffff',
+      strokeThickness: 2
+    }).setOrigin(0.5);
+
+    // Target image text
+    this.add.text(this.scale.width / 2, this.scale.height / 2 - 400, 'Find this image:', { 
+      fontSize: '20px', 
+      color: '#000000',
+      stroke: '#ffffff',
+      strokeThickness: 2
+    }).setOrigin(0.5);
+
+    // Win screen (initially hidden)
+    this.winScreen = this.add.text(this.scale.width / 2, this.scale.height / 2, '🎉 You Win! 🎉', {
+      fontSize: '48px',
+      color: '#00aa00',
+      stroke: '#ffffff',
+      strokeThickness: 3
+    }).setOrigin(0.5);
+    this.winScreen.setVisible(false);
+  }
+
+  createGameBoard() {
+    // Clean up any existing game objects
+    if (this.imageBoxes) {
+        this.imageBoxes.forEach(box => box.destroy());
+    }
+
+    this.imageBoxes = [];
+    const imageList = [];
+
+    // Calculate grid layout dynamically
+    const gridSpacing = 110;
+    const gridWidth = 5;
+    const gridHeight = Math.ceil(this.totalBoxes / gridWidth);
+
+    const boardWidth = gridWidth * gridSpacing;
+    const boardHeight = gridHeight * gridSpacing;
+
+    const startX = (this.scale.width - boardWidth) / 2 + gridSpacing / 2;
+    const startY = (this.scale.height - boardHeight) / 2 + gridSpacing / 2;
+
+    for (let i = 0; i < this.totalBoxes; i++) {
+        const row = Math.floor(i / gridWidth);
+        const col = i % gridWidth;
+
+        const x = startX + col * gridSpacing;
+        const y = startY + row * gridSpacing;
+
+        // Get random image source
+        const imageIndex = Math.floor(Math.random() * this.imageSources.length);
+        const imgKey = `landmark${imageIndex}`;
+        imageList.push(imgKey);
+
+        // Create image sprite
+        const box = this.add.sprite(x, y, imgKey);
+        box.setDisplaySize(100, 100);
+        box.setInteractive();
+
+        // Add border effect (invisible by default)
+        const border = this.add.rectangle(x, y, 104, 104, 0x333333);
+        border.setStrokeStyle(2, 0x333333);
+        border.setVisible(false);
+
+        // Store reference to source image
+        box.imgKey = imgKey;
+
+        // Set up interaction
+        box.on('pointerover', () => {
+            border.setStrokeStyle(2, 0x000000); // Set the border to a thin black outline
+            border.setVisible(true); // Show the border
+            box.clearTint(); // Ensure the sprite does not get tinted
+        });
+
+        box.on('pointerout', () => {
+            border.setVisible(false); // Hide the border
+            box.clearTint(); // Reset any tinting effect
+        });
+
+        box.on('pointerdown', () => {
+            this.handleClick(box.imgKey);
+        });
+
+        this.imageBoxes.push(box);
+        this.imageBoxes.push(border);
+    }
+
+    // Select random image as target
+    const randomIndex = Math.floor(Math.random() * imageList.length);
+    this.targetImageSrc = imageList[randomIndex];
+
+    // Show target image
+    if (this.targetImage) {
+        this.targetImage.destroy();
+    }
+    this.targetImage = this.add.sprite(this.scale.width / 2, startY - 110, this.targetImageSrc);
+    this.targetImage.setDisplaySize(80, 80);
+
+    // Add border around target image
+    if (this.targetBorder) {
+        this.targetBorder.destroy();
+    }
+    this.targetBorder = this.add.rectangle(this.scale.width / 2, startY - 110, 86, 86);
+    this.targetBorder.setStrokeStyle(3, 0x333333);
+  }
+
+  gameWin() {
+    // Display the win screen
+    this.winScreen.setVisible(true);
+
+    // Hide all game elements
+    this.imageBoxes.forEach(box => box.setVisible(false));
+    this.targetImage.setVisible(false);
+    this.targetBorder.setVisible(false);
+
+    // Optionally, you can add additional win logic here (e.g., restart button, animations, etc.)
+  }
+
+  handleClick(clickedImgKey) {
+    // Clear any existing timer
+    if (this.resultDisplayTimer) {
+      this.time.removeEvent(this.resultDisplayTimer);
+    }
+
+    if (clickedImgKey === this.targetImageSrc) {
+      // Correct choice
+      this.score++;
+      this.scoreText.setText('Score: ' + this.score);
+      this.resultText.setText('Correct!');
+      this.resultText.setColor('#00aa00');
+      
+      if (this.score >= 10) {
+        // Trigger the win condition
+        this.gameWin();
+        return;
+      }
+      
+      // Set timer to create a new game board
+      this.resultDisplayTimer = this.time.delayedCall(1000, () => {
+        this.resultText.setText('');
+        this.createGameBoard();
+      });
+    } else {
+      // Incorrect choice
+      this.resultText.setText('Incorrect! Try again.');
+      this.resultText.setColor('#aa0000');
+      
+      // Set timer to clear message
+      this.resultDisplayTimer = this.time.delayedCall(1000, () => {
+        this.resultText.setText('');
+      });
+    }
   }
 
   getRandomImage() {
-    return this.imageSources[Math.floor(Math.random() * this.imageSources.length)];
-  }
-
-  generateGameBoard() {
-    this.gameContainer.removeAll(true);
-    const imageList = [];
-
-    for (let i = 0; i < this.totalBoxes; i++) {
-      const imgSrc = this.getRandomImage();
-      imageList.push(imgSrc);
-
-      const x = 100 + (i % 5) * 110;
-      const y = 150 + Math.floor(i / 5) * 110;
-
-      const imageIndex = this.imageSources.indexOf(imgSrc);
-      const image = this.add.image(x, y, `image${imageIndex}`).setInteractive();
-      image.setScale(0.5);
-      image.on('pointerdown', () => this.handleClick(imgSrc));
-      this.gameContainer.add(image);
-    }
-
-    const randomIndex = Math.floor(Math.random() * imageList.length);
-    this.targetImageSrc = imageList[randomIndex];
-    const targetIndex = this.imageSources.indexOf(this.targetImageSrc);
-    this.targetImage.setTexture(`image${targetIndex}`);
-  }
-
-  handleClick(clickedSrc) {
-    if (clickedSrc === this.targetImageSrc) {
-      this.score++;
-      this.resultText.setText('Correct!').setStyle({ fill: 'green' });
-      this.scoreText.setText(`Score: ${this.score}`);
-
-      if (this.score >= 10) {
-        this.winText.setVisible(true);
-        this.gameContainer.setVisible(false);
-        this.targetImage.setVisible(false);
-        return;
-      }
-
-      this.time.delayedCall(1000, () => {
-        this.resultText.setText('');
-        this.generateGameBoard();
-      });
-    } else {
-      this.resultText.setText('Incorrect! Try again.').setStyle({ fill: 'red' });
-
-      this.time.delayedCall(1000, () => {
-        this.resultText.setText('');
-      });
-    }
+    const index = Math.floor(Math.random() * this.imageSources.length);
+    return `landmark${index}`;
   }
 }

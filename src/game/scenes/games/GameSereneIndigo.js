@@ -10,6 +10,12 @@ export class GameSereneIndigo extends Phaser.Scene {
   }
 
   create() {
+    // Add message text
+    this.message = this.add.text(0, 0, 'Dodge the blocks to make it across the bridge!', {
+      fontSize: '48px',
+      color: '#fff',
+    });
+
     // Game dimensions
     this.gameWidth = this.sys.game.config.width;
     this.gameHeight = this.sys.game.config.height;
@@ -90,11 +96,39 @@ export class GameSereneIndigo extends Phaser.Scene {
   }
 
   handleCollision() {
-    this.scene.restart();
-    alert('Game Over!');
+    // Stop the physics simulation
+    this.physics.pause();
+
+    // Clear all obstacles
+    this.obstacles.clear(true, true);
+
+    // Display "Game Over" message
+    const gameOverText = this.add.text(
+      this.gameWidth / 2,
+      this.gameHeight / 2,
+      'Game Over! Restarting...',
+      {
+        fontSize: '32px',
+        fill: '#fff',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: { x: 20, y: 10 },
+      }
+    );
+    gameOverText.setOrigin(0.5);
+
+    // Restart the scene after a short delay
+    this.time.delayedCall(2000, () => {
+      this.scene.restart();
+    });
   }
 
   showWinScreen() {
+    // Stop the physics simulation
+    this.physics.pause();
+
+    // Clear all obstacles
+    this.obstacles.clear(true, true);
+
     const winText = this.add.text(
       this.gameWidth / 2,
       this.gameHeight / 2,
@@ -107,5 +141,11 @@ export class GameSereneIndigo extends Phaser.Scene {
       }
     );
     winText.setOrigin(0.5);
+
+
+    // Got to main menu after short delay
+    this.time.delayedCall(3000, () => {
+      this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+    });
   }
 }

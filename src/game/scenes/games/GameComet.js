@@ -1,143 +1,303 @@
 import Phaser from 'phaser';
 
+
 export class GameComet extends Phaser.Scene {
   constructor() {
-    super({ key: 'GameComet' });
+    super('GameComet');
+    
+    // Game state variables
+    this.gameState = 'fire'; // Possible states: 'fire', 'transition', 'circuit'
+    this.attempts = 0;
+    this.maxStrikes = 0;
+    this.selectedTerminal = null;
+    this.connections = { positive: false, negative: false };
   }
 
   preload() {
-    // Preload assets if needed
+    // Load assets
+    this.load.image('match-btn', 'https://cdn.jsdelivr.net/gh/photonstorm/phaser3-examples@master/public/assets/sprites/button-green.png');
   }
 
   create() {
-    // Game 1: Lighting the fire
-    this.attempts = 0;
-    this.maxStrikes = Phaser.Math.Between(2, 6);
+    // Set the background color to black
+    this.cameras.main.setBackgroundColor('#000000');
 
-    this.add.text(300, 50, 'Can You Light the Fire?', { fontSize: '24px', color: '#000' }).setOrigin(0.5);
-    this.message = this.add.text(300, 150, 'Keep trying...', { fontSize: '18px', color: '#000' }).setOrigin(0.5);
+    // Center the game objects
+    const centerX = this.scale.width / 2;
+    const centerY = this.scale.height / 2;
 
-    this.fireIcon = this.add.text(300, 200, '', { fontSize: '60px', color: '#ff9900' }).setOrigin(0.5);
+    // Adjust positions of game elements
+    this.maxStrikes = Math.floor(Math.random() * 5) + 2;
 
-    this.fireButton = this.add.text(300, 300, '🔥 Strike Match', {
-      fontSize: '18px',
-      backgroundColor: '#ff9900',
-      padding: { x: 15, y: 10 },
-      color: '#fff',
-      borderRadius: 5,
-    })
-      .setInteractive()
-      .on('pointerdown', this.strikeMatch, this);
+    // Create fire game objects
+    this.createFireGame(centerX, centerY);
 
-    // Transition overlays
-    this.leftOverlay = this.add.rectangle(0, 300, 400, 600, 0x000000).setOrigin(0, 0.5).setAlpha(0);
-    this.rightOverlay = this.add.rectangle(400, 300, 400, 600, 0x000000).setOrigin(0, 0.5).setAlpha(0);
+    // Create circuit game objects (initially hidden)
+    this.createCircuitGame(centerX, centerY);
 
-    // Game 2: Connecting battery to bulb
-    this.game2Container = this.add.container(0, 0).setVisible(false);
-
-    this.game2Container.add([
-      this.add.text(300, 50, 'Connect Battery to Bulb', { fontSize: '24px', color: '#000' }).setOrigin(0.5),
-      this.add.text(300, 100, 'Click a battery terminal, then the matching lightbulb terminal', { fontSize: '16px', color: '#000' }).setOrigin(0.5),
-    ]);
-
-    this.lineGraphics = this.add.graphics();
-    this.game2Container.add(this.lineGraphics);
-
-    this.bulb = this.add.rectangle(300, 200, 160, 100, 0xffeaa7);
-    this.battery = this.add.rectangle(300, 400, 160, 100, 0xdfe6e9);
-    this.game2Container.add([this.bulb, this.battery]);
-
-    this.bulbTerminals = {
-      positive: this.add.circle(270, 180, 10, 0x2d3436).setInteractive(),
-      negative: this.add.circle(330, 180, 10, 0x2d3436).setInteractive(),
-    };
-    this.batteryTerminals = {
-      positive: this.add.circle(270, 380, 10, 0x2d3436).setInteractive(),
-      negative: this.add.circle(330, 380, 10, 0x2d3436).setInteractive(),
-    };
-    this.game2Container.add(Object.values(this.bulbTerminals));
-    this.game2Container.add(Object.values(this.batteryTerminals));
-
-    this.winText = this.add.text(300, 300, '🎉 You Win! 🎉', { fontSize: '32px', color: 'green' }).setOrigin(0.5).setVisible(false);
-    this.game2Container.add(this.winText);
-
-    this.selectedTerminal = null;
-    this.connections = { positive: false, negative: false };
-
-    this.setupTerminalListeners();
+    // Initially show only the fire game
+    this.toggleGameVisibility('fire');
   }
 
+  update() {
+    // Any per-frame updates would go here
+  }
+
+  // Create the fire lighting game
+  createFireGame(centerX, centerY) {
+    this.fireGameGroup = this.add.group();
+
+    // Title
+    const title = this.add.text(centerX, centerY - 200, 'Can You Light the Fire?', {
+      fontSize: '32px',
+      color: '#fff',
+      align: 'center'
+    }).setOrigin(0.5);
+
+    // Strike match button
+    this.matchBtn = this.add.image(centerX, centerY - 50, 'match-btn')
+      .setInteractive()
+      .setScale(2)
+      .on('pointerdown', () => this.strikeMatch());
+
+    // Add match text
+    const matchText = this.add.text(centerX, centerY - 50, '🔥 Strike Match', {
+      fontSize: '18px',
+      color: '#fff'
+    }).setOrigin(0.5);
+
+    // Message text
+    this.messageText = this.add.text(centerX, centerY + 50, 'Keep trying...', {
+      fontSize: '24px',
+      color: '#fff'
+    }).setOrigin(0.5);
+
+    // Fire icon
+    this.fireIcon = this.add.text(centerX, centerY + 120, '', {
+      fontSize: '60px',
+      fontFamily: 'Arial'
+    }).setOrigin(0.5);
+
+    // Add all objects to the group
+    this.fireGameGroup.add(title);
+    this.fireGameGroup.add(this.matchBtn);
+    this.fireGameGroup.add(matchText);
+    this.fireGameGroup.add(this.messageText);
+    this.fireGameGroup.add(this.fireIcon);
+  }
+
+  // Create the circuit connection game
+  createCircuitGame(centerX, centerY) {
+    this.circuitGameGroup = this.add.group();
+
+    // Add background
+    const background = this.add.rectangle(centerX, centerY, 400, 500, 0xf9f9f9)
+      .setStrokeStyle(2, 0xcccccc);
+
+    // Title
+    const title = this.add.text(centerX, centerY - 350, 'Connect Battery to Bulb', {
+      fontSize: '32px',
+      color: '#fff'
+    }).setOrigin(0.5);
+
+    // Instructions
+    const instructions = this.add.text(centerX, centerY - 300, 'Click a battery terminal, then the matching lightbulb terminal', {
+      fontSize: '24px',
+      color: '#fff',
+      align: 'center',
+      wordWrap: { width: 800 }
+    }).setOrigin(0.5);
+
+    // Graphics for lines
+    this.lineGraphics = this.add.graphics();
+
+    // Add objects to group
+    this.circuitGameGroup.add(background);
+    this.circuitGameGroup.add(title);
+    this.circuitGameGroup.add(instructions);
+    this.circuitGameGroup.add(this.lineGraphics);
+
+    // Create components
+    this.createComponent(centerX, centerY - 150, 'Lightbulb', 0xffeaa7, 'bulb');
+    this.createComponent(centerX, centerY + 100, 'Battery', 0xdfe6e9, 'battery');
+  }
+
+  // Create component with terminals
+  createComponent(x, y, label, color, side) {
+    // Component background
+    const component = this.add.rectangle(x, y, 180, 120, color)
+      .setStrokeStyle(2, 0x333333);
+
+    // Component label
+    const componentLabel = this.add.text(x, y - 30, label, {
+      fontSize: '32px',
+      fontWeight: 'bold',
+      color: '#000'
+    }).setOrigin(0.5);
+
+    // Create terminals
+    const xOffset = 40;
+
+    // Positive terminal
+    const positiveLabel = this.add.text(x - xOffset, y + 5, '+', {
+      fontSize: '32px',
+      fontWeight: 'bold',
+      color: '#000'
+    }).setOrigin(0.5);
+
+    const positiveTerminal = this.add.circle(x - xOffset, y + 30, 12.5, 0x2d3436)
+      .setInteractive()
+      .setData({ type: 'positive', side: side }); // Attach 'side' data
+
+    // Negative terminal
+    const negativeLabel = this.add.text(x + xOffset, y + 5, '−', {
+      fontSize: '32px',
+      fontWeight: 'bold',
+      color: '#000'
+    }).setOrigin(0.5);
+
+    const negativeTerminal = this.add.circle(x + xOffset, y + 30, 12.5, 0x2d3436)
+      .setInteractive()
+      .setData({ type: 'negative', side: side }); // Attach 'side' data
+
+    // Add click listeners to terminals
+    [positiveTerminal, negativeTerminal].forEach(terminal => {
+      terminal.on('pointerdown', () => {
+        this.handleTerminalClick(terminal);
+      });
+    });
+
+    // Add all elements to circuit group
+    this.circuitGameGroup.add(component);
+    this.circuitGameGroup.add(componentLabel);
+    this.circuitGameGroup.add(positiveLabel);
+    this.circuitGameGroup.add(positiveTerminal);
+    this.circuitGameGroup.add(negativeLabel);
+    this.circuitGameGroup.add(negativeTerminal);
+  }
+
+  // Fire game - Strike match logic
   strikeMatch() {
     this.attempts++;
+
     if (this.attempts >= this.maxStrikes) {
-      this.message.setText('🔥 Fire is lit!');
+      this.messageText.setText('🔥 Fire is lit!');
       this.fireIcon.setText('🔥🔥🔥');
-      this.fireButton.disableInteractive().setStyle({ backgroundColor: '#888' });
-      this.startTransition();
+      this.matchBtn.disableInteractive();
+      this.matchBtn.setTint(0x888888);
+
+      // Transition to circuit game after delay
+      this.time.delayedCall(1000, () => {
+        // Fade out effect
+        this.cameras.main.fadeOut(800, 0, 0, 0);
+
+        this.time.delayedCall(900, () => {
+          this.toggleGameVisibility('circuit');
+          // Fade back in
+          this.cameras.main.fadeIn(800, 0, 0, 0);
+        });
+      });
+
     } else {
-      this.message.setText(`You struck the match... (${this.attempts})`);
+      this.messageText.setText(`You struck the match... (${this.attempts})`);
     }
   }
 
-  startTransition() {
-    this.tweens.add({
-      targets: [this.leftOverlay, this.rightOverlay],
-      alpha: 1,
-      duration: 600,
-      onComplete: () => {
-        this.fireButton.setVisible(false);
-        this.message.setVisible(false);
-        this.fireIcon.setVisible(false);
-        this.game2Container.setVisible(true);
+  // Circuit game - Terminal connection logic
+  handleTerminalClick(terminal) {
+    const terminalData = terminal.getData('type') ? { 
+      type: terminal.getData('type'), 
+      side: terminal.getData('side') 
+    } : null;
 
-        this.tweens.add({
-          targets: [this.leftOverlay, this.rightOverlay],
-          alpha: 0,
-          duration: 600,
-        });
-      },
-    });
+    if (!this.selectedTerminal) {
+      if (terminalData && terminalData.side === 'battery') {
+        this.selectedTerminal = terminal;
+        terminal.setFillStyle(0x00b894); // Green to show selection
+      }
+    } else {
+      if (terminalData && terminalData.side === 'bulb') {
+        if (terminalData.type === this.selectedTerminal.getData('type')) {
+          this.drawLineBetween(this.selectedTerminal, terminal);
+          this.connections[terminalData.type] = true;
+          this.checkWin();
+        } else {
+          this.showMessage('Wrong terminal! Try again.');
+        }
+
+        this.selectedTerminal.setFillStyle(0x2d3436); // Reset to black
+        this.selectedTerminal = null;
+      }
+    }
   }
 
-  setupTerminalListeners() {
-    Object.values(this.batteryTerminals).forEach((terminal) => {
-      terminal.on('pointerdown', () => {
-        if (!this.selectedTerminal) {
-          this.selectedTerminal = terminal;
-          terminal.setFillStyle(0x00b894);
-        }
-      });
-    });
+  // Draw a line between two terminals
+  drawLineBetween(startTerminal, endTerminal) {
+    const startX = startTerminal.x;
+    const startY = startTerminal.y;
+    const endX = endTerminal.x;
+    const endY = endTerminal.y;
 
-    Object.values(this.bulbTerminals).forEach((terminal) => {
-      terminal.on('pointerdown', () => {
-        if (this.selectedTerminal) {
-          if (this.selectedTerminal === this.batteryTerminals[terminal.name]) {
-            this.drawLineBetween(this.selectedTerminal, terminal);
-            this.connections[terminal.name] = true;
-            this.checkWin();
-          } else {
-            alert('Wrong terminal! Try again.');
-          }
-          this.selectedTerminal.setFillStyle(0x2d3436);
-          this.selectedTerminal = null;
-        }
-      });
-    });
-  }
-
-  drawLineBetween(start, end) {
+    // Draw line
     this.lineGraphics.lineStyle(3, 0x0984e3);
     this.lineGraphics.beginPath();
-    this.lineGraphics.moveTo(start.x, start.y);
-    this.lineGraphics.lineTo(end.x, end.y);
+    this.lineGraphics.moveTo(startX, startY);
+    this.lineGraphics.lineTo(endX, endY);
+    this.lineGraphics.closePath();
     this.lineGraphics.strokePath();
   }
 
+  // Show message for a short time
+  showMessage(text) {
+    const message = this.add.text(300, 300, text, {
+      fontSize: '20px',
+      backgroundColor: '#000',
+      color: '#fff',
+      padding: { x: 10, y: 5 }
+    }).setOrigin(0.5);
+
+    // Make it disappear after a short delay
+    this.time.delayedCall(1500, () => {
+      message.destroy();
+    });
+  }
+
+  // Check if player has won the circuit game
   checkWin() {
     if (this.connections.positive && this.connections.negative) {
-      this.winText.setVisible(true);
+      const centerX = this.scale.width / 2;
+      const centerY = this.scale.height / 2;
+
+      // Create win screen
+      //const winOverlay = this.add.rectangle(centerX, centerY, 400, 500, 0x00ff00, 0.2);
+      const winOverlay = this.add.rectangle(centerX, centerY, 400, 500, 0x00ff00);
+
+      const winText = this.add.text(centerX, centerY, '🎉 You Win! 🎉', {
+        fontSize: '32px',
+        fontWeight: 'bold',
+        color: 'green'
+      }).setOrigin(0.5); // Center the text
+
+      // Make lightbulb glow
+      this.cameras.main.flash(1000, 255, 255, 200);
+
+      // Got to main menu after short delay
+      this.time.delayedCall(3000, () => {
+        this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+      });
+    }
+  }
+
+  // Toggle between fire and circuit games
+  toggleGameVisibility(visibleGame) {
+    if (visibleGame === 'fire') {
+      this.fireGameGroup.setVisible(true);
+      if (this.circuitGameGroup) this.circuitGameGroup.setVisible(false);
+      this.gameState = 'fire';
+    } else if (visibleGame === 'circuit') {
+      this.fireGameGroup.setVisible(false);
+      this.circuitGameGroup.setVisible(true);
+      this.gameState = 'circuit';
     }
   }
 }
