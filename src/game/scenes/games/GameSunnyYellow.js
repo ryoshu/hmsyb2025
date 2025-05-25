@@ -2,13 +2,13 @@ import Phaser from 'phaser';
 
 export class GameSunnyYellow extends Phaser.Scene {
   constructor() {
-    super({ key: 'GameSunnyYellow' });
+    super({key: 'GameSunnyYellow'});
   }
 
   preload() {
     // Load assets
     //this.load.image('background', 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/01775b08-79cb-497a-8c51-5e84cb379777/dicvsf3-ab6b34cb-90cf-4ec0-bf8a-b07c3907bad3.png/v1/fill/w_1207,h_662,q_70,strp/3_train_tracks_background_by_australiaartstudios_dicvsf3-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzAyIiwicGF0aCI6IlwvZlwvMDE3NzViMDgtNzljYi00OTdhLThjNTEtNWU4NGNiMzc5Nzc3XC9kaWN2c2YzLWFiNmIzNGNiLTkwY2YtNGVjMC1iZjhhLWIwN2MzOTA3YmFkMy5wbmciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.7bMd3T9kANQWwApuHBQVHoqn7OH5n3NQtp5H0tuD0AU');
-    this.load.image('background', '/assets/sunny_yellow_background.jpg');
+    // this.load.image('background', '/assets/sunny_yellow_background.jpg');
     this.load.image('train', '/assets/sunny_yellow_train.png');
     // this.load.image('train', 'https://static.vecteezy.com/system/resources/thumbnails/009/342/543/small/vintage-train-on-railroad-clipart-design-illustration-free-png.png');
   }

@@ -23,18 +23,14 @@ export const GAMES = [
     GameRosyRed,
     GameOrangeBlossom,
     GameSunnyYellow,
-
     GameCelestialBlue,
     GameHarmoniousOrange,
     GamePeacefulIvory,
     GameSereneIndigo,
-
+    GameOceanBlue,
     GameAurora,
     GameConstellation,
     GameGalaxy,
-
     GameComet,
-    
     GameMiddleSchool,
-    GameOceanBlue
 ];

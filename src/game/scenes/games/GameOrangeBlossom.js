@@ -2,8 +2,9 @@ import { Scene } from 'phaser';
 
 export class GameOrangeBlossom extends Scene {
     constructor() {
-        super('GameOrangeBlossom');
+        super({key: 'GameOrangeBlossom'});
 
+        
         this.gameState = 'instructions'; // instructions, playing, victory, final
         this.currentLevel = 1;
         this.selected = [];

@@ -164,7 +164,11 @@ export class GamePeacefulIvory extends Phaser.Scene {
     this.targetImage.setVisible(false);
     this.targetBorder.setVisible(false);
 
-    // Optionally, you can add additional win logic here (e.g., restart button, animations, etc.)
+    
+    // Got to main menu after short delay
+    this.time.delayedCall(3000, () => {
+      this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+    });
   }
 
   handleClick(clickedImgKey) {

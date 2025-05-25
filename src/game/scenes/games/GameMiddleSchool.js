@@ -18,14 +18,14 @@ export class GameMiddleSchool extends Phaser.Scene {
     this.canvasHeight = this.sys.game.config.height;
 
     // Player setup
-    this.player = this.add.rectangle(this.canvasWidth / 2, this.canvasHeight - 50, 60, 60, 0x0000ff);
+    this.player = this.add.rectangle(this.canvasWidth / 2, this.canvasHeight - 200, 60, 60, 0x0000ff);
     this.player.health = 100;
-    this.player.speed = 200;
+    this.player.speed = 300;
 
     // Boss setup
     this.boss = this.add.circle(this.canvasWidth / 2, this.canvasHeight / 2, 50, 0x00ff00);
-    this.boss.maxHealth = 300;
-    this.boss.health = 300;
+    this.boss.maxHealth = 50;
+    this.boss.health = this.boss.maxHealth;
     this.boss.lasers = [];
 
     // Damage spot setup
@@ -63,8 +63,8 @@ export class GameMiddleSchool extends Phaser.Scene {
 
   createVirtualJoystick() {
     // Position joystick in bottom-left corner
-    const joystickX = 100;
-    const joystickY = this.canvasHeight - 100;
+    const joystickX = this.canvasWidth - 100;
+    const joystickY = this.canvasHeight - 300;
 
     // Create temporary graphics objects for texture generation, then destroy them
     const tempBaseGraphics = this.add.graphics()
@@ -344,13 +344,30 @@ export class GameMiddleSchool extends Phaser.Scene {
       this.createDamageSpot();
 
       if (this.boss.health <= 0) {
-        this.gameWon = true;
-        this.add.text(this.canvasWidth / 2, this.canvasHeight / 2, '🎉 You Win! 🎉', {
-          fontSize: '64px',
-          color: '#00ff00',
-        }).setOrigin(0.5);
+        this.gameWin();
       }
     }
+  }
+
+  gameWin() {
+    this.gameWon = true;
+
+    this.player.visible = false;
+    this.boss.visible = false;
+    this.boss.lasers.forEach(laser => laser.destroy());
+    this.playerHealthBar.visible = false;
+    this.damageSpot.visible = false;
+    this.bossHealthBar.visible = false;
+
+    this.add.text(this.canvasWidth / 2, this.canvasHeight / 2, '🎉 You Win! 🎉', {
+      fontSize: '64px',
+      color: '#00ff00',
+    }).setOrigin(0.5);
+
+    // Got to main menu after short delay
+    this.time.delayedCall(3000, () => {
+      this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+    });
   }
 
   isCircleRectColliding(circleX, circleY, circleRadius, rect) {

@@ -1,13 +1,33 @@
 import { Scene } from 'phaser';
-import { GAMES } from '../Settings';
 
 export class MainMenu extends Scene
 {
+
     constructor () {
         super('MainMenu');
     }
 
     create () {
+
+        const GAMES = [
+            'GameRosyRed',
+            'GameOrangeBlossom',
+            'GameSunnyYellow',
+            'GameCelestialBlue',
+            'GameHarmoniousOrange',
+            'GamePeacefulIvory',
+            'GameSereneIndigo',
+            'GameOceanBlue',
+            'GameAurora',
+            'GameConstellation',
+            'GameGalaxy',
+            'GameComet',
+            'GameMiddleSchool',
+        ];
+
+        let sceneKeys = this.scene.manager.keys;
+        console.log(sceneKeys); 
+
         const centerX = this.cameras.main.width / 2;
         const centerY = this.cameras.main.height / 2;
         
@@ -19,20 +39,22 @@ export class MainMenu extends Scene
             let x = centerX - 500;
             let y = baseY + (100 * i);
 
-            console.log(i + ">" + Math.floor(GAMES.length * .5));
+            console.log("debug: " + i + ">" + Math.floor(GAMES.length * .5));
+            console.log(Object.getOwnPropertyNames(GAMES[i]));
+            console.log(GAMES[i])
+            
             if(i > Math.floor(GAMES.length * .5)) {
                 x = centerX + 50;
                 y = baseY + (100 * (i % Math.floor(GAMES.length * .5)));
             }
-            const gameButton = this.add.text(x, y, GAMES[i].name, { 
+            const gameButton = this.add.text(x, y, GAMES[i], { 
                 fill: '#0f0',
-                fontFamily: 'Arial Black', 
                 fontSize: 38
             });
             gameButton.setInteractive();
             gameButton.on('pointerdown', () => { 
-                this.scene.start(GAMES[i].name); 
-            });   
+                this.scene.start(GAMES[i]); 
+            });
         }
         
         // this.add.image(512, 384, 'background');
@@ -40,11 +62,10 @@ export class MainMenu extends Scene
         // this.add.image(512, 300, 'logo');
 
         const hmsLockup = this.add.text(centerX, 100, 'Hudson Montessori\nYearbook Game 2025', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
+            fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
-        console.log(hmsLockup);
 
         this.scale.on('resize', this.resizeGame, this);
     }

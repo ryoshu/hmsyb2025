@@ -64,7 +64,7 @@ export class GameSereneIndigo extends Phaser.Scene {
   createVirtualJoystick() {
     // Position joystick in bottom-right corner
     const joystickX = this.gameWidth - 100;
-    const joystickY = this.gameHeight - 100;
+    const joystickY = this.gameHeight - 200;
 
     // Create temporary graphics objects for texture generation, then destroy them
     const tempBaseGraphics = this.add.graphics()
