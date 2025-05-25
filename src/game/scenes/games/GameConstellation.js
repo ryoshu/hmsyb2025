@@ -141,5 +141,9 @@ export class GameConstellation extends Phaser.Scene {
   showWinScreen() {
     this.message.setText('You Win!');
     this.isGameActive = false;
+    // Got to main menu after short delay
+    this.time.delayedCall(3000, () => {
+      this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+    });
   }
 }

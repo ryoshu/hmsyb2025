@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js'; // Add this if using rex plugin
 
 export class GameOceanBlue extends Phaser.Scene {
   constructor() {
@@ -8,6 +9,21 @@ export class GameOceanBlue extends Phaser.Scene {
   preload() {
     // Load the tornado sprite
     this.load.image('tornado', './assets/OB-2.png');
+
+    // Preload joystick textures (optional, for fallback)
+    this.load.once('complete', () => {
+      // Generate textures for fallback joystick
+      if (!this.textures.exists('joystick-base')) {
+        const g = this.add.graphics().fillStyle(0x888888, 0.5).fillCircle(64, 64, 64);
+        g.generateTexture('joystick-base', 128, 128);
+        g.destroy();
+      }
+      if (!this.textures.exists('joystick-thumb')) {
+        const g = this.add.graphics().fillStyle(0xcccccc, 0.8).fillCircle(32, 32, 32);
+        g.generateTexture('joystick-thumb', 64, 64);
+        g.destroy();
+      }
+    });
   }
 
   create() {
@@ -74,6 +90,9 @@ export class GameOceanBlue extends Phaser.Scene {
     // Set up keyboard input
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    // --- Virtual Joystick Setup (left/right only) ---
+    this.createVirtualJoystick();
+
     // Add timed events for tornado creation and collision checking
     this.tornadoCreationEvent = this.time.addEvent({
       delay: 1000,
@@ -90,11 +109,99 @@ export class GameOceanBlue extends Phaser.Scene {
     });
   }
 
+  createVirtualJoystick() {
+    const joystickX = 120;
+    const joystickY = this.scale.height - 120;
+
+    // Generate textures if not already present (for fallback)
+    if (!this.textures.exists('joystick-base')) {
+      const g = this.add.graphics().fillStyle(0x888888, 0.5).fillCircle(64, 64, 64);
+      g.generateTexture('joystick-base', 128, 128);
+      g.destroy();
+    }
+    if (!this.textures.exists('joystick-thumb')) {
+      const g = this.add.graphics().fillStyle(0xcccccc, 0.8).fillCircle(32, 32, 32);
+      g.generateTexture('joystick-thumb', 64, 64);
+      g.destroy();
+    }
+
+    // Try to use rexvirtualjoystickplugin if available
+    const plugin = this.plugins.get('rexvirtualjoystickplugin');
+    if (plugin) {
+      this.joyStick = plugin.add(this, {
+        x: joystickX,
+        y: joystickY,
+        radius: 64,
+        base: this.add.image(0, 0, 'joystick-base').setDisplaySize(128, 128),
+        thumb: this.add.image(0, 0, 'joystick-thumb').setDisplaySize(64, 64),
+        dir: '4dir', // Only 4 directions, but we'll only use left/right
+        forceMin: 16,
+        enable: true
+      });
+      this.joyStickCursors = this.joyStick.createCursorKeys();
+    } else {
+      // Fallback: Simple touch-based joystick
+      this.createSimpleJoystick(joystickX, joystickY);
+    }
+  }
+
+  createSimpleJoystick(x, y) {
+    this.joystickBase = this.add.image(x, y, 'joystick-base').setDisplaySize(128, 128).setAlpha(0.7);
+    this.joystickThumb = this.add.image(x, y, 'joystick-thumb').setDisplaySize(64, 64).setAlpha(0.8);
+
+    this.joyStickCursors = {
+      left: { isDown: false },
+      right: { isDown: false }
+    };
+
+    let isDragging = false;
+    let dragStartX = 0;
+
+    this.input.on('pointerdown', (pointer) => {
+      const distance = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.joystickBase.x, this.joystickBase.y);
+      if (distance < 64) {
+        isDragging = true;
+        dragStartX = pointer.x;
+      }
+    });
+
+    this.input.on('pointermove', (pointer) => {
+      if (isDragging) {
+        const deltaX = pointer.x - this.joystickBase.x;
+        const deadZone = 20;
+
+        // Only left/right
+        this.joyStickCursors.left.isDown = deltaX < -deadZone;
+        this.joyStickCursors.right.isDown = deltaX > deadZone;
+
+        // Move thumb visually
+        const maxDistance = 50;
+        if (Math.abs(deltaX) <= maxDistance) {
+          this.joystickThumb.x = pointer.x;
+        } else {
+          this.joystickThumb.x = this.joystickBase.x + Math.sign(deltaX) * maxDistance;
+        }
+      }
+    });
+
+    this.input.on('pointerup', () => {
+      if (isDragging) {
+        isDragging = false;
+        this.joystickThumb.x = this.joystickBase.x;
+        this.joyStickCursors.left.isDown = false;
+        this.joyStickCursors.right.isDown = false;
+      }
+    });
+  }
+
   update() {
-    // Handle player movement
-    if (this.cursors.left.isDown) {
+    // Handle player movement (keyboard or joystick)
+    const left = this.cursors.left.isDown || (this.joyStickCursors && this.joyStickCursors.left && this.joyStickCursors.left.isDown);
+    const right = this.cursors.right.isDown || (this.joyStickCursors && this.joyStickCursors.right && this.joyStickCursors.right.isDown);
+
+    if (left) {
       this.player.x -= 5;
-    } else if (this.cursors.right.isDown) {
+    } else if (right) {
       this.player.x += 5;
     }
 
