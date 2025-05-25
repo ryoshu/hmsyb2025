@@ -42,6 +42,15 @@ export class GameMiddleSchool extends Phaser.Scene {
     // Create virtual joystick
     this.createVirtualJoystick();
 
+    // Directions
+    this.add.text(this.canvasWidth / 2, 100, 'Use the joystick to get to the yellow spots!', {
+      fontSize: '28px',
+      color: '#ffff00',
+      fontFamily: 'Arial',
+      align: 'center',
+      wordWrap: { width: this.canvasWidth - 100 }
+    }).setOrigin(0.5);
+
     // Health bars
     this.playerHealthBar = this.add.graphics();
     this.bossHealthBar = this.add.graphics();
