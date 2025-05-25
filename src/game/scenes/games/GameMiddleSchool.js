@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import VirtualJoystick from 'phaser3-rex-plugins/plugins/virtualjoystick.js';
+import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
 
 export class GameMiddleSchool extends Phaser.Scene {
   constructor() {
@@ -7,10 +7,13 @@ export class GameMiddleSchool extends Phaser.Scene {
   }
 
   preload() {
-    // Preload assets if needed
+  
   }
 
   create() {
+    // Add black background
+    this.add.rectangle(0, 0, this.sys.game.config.width, this.sys.game.config.height, 0x000000).setOrigin(0, 0);
+
     this.canvasWidth = this.sys.game.config.width;
     this.canvasHeight = this.sys.game.config.height;
 
@@ -36,6 +39,9 @@ export class GameMiddleSchool extends Phaser.Scene {
     // Input setup
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    // Create virtual joystick
+    this.createVirtualJoystick();
+
     // Health bars
     this.playerHealthBar = this.add.graphics();
     this.bossHealthBar = this.add.graphics();
@@ -48,89 +54,198 @@ export class GameMiddleSchool extends Phaser.Scene {
       loop: true,
     });
 
-    // this.createVirtualJoystick();
-    // this.setCursorDebugInfo();
-    // this.updateJoystickState();
+    // Debug text for joystick (optional)
+    this.cursorDebugText = this.add.text(10, 10, '', {
+      fontSize: '16px',
+      color: '#ffffff'
+    });
   }
-  /*
+
   createVirtualJoystick() {
-    this.joyStick = this.plugins.get('rex-virtual-joystick-plugin"').add(
-        this,
-        Object.assign({}, this.joystickConfig, {
-            radius: 32,
-            base: this.add.image(0, 0, 'base').setDisplaySize(110, 110),
-            thumb: this.add.image(0, 0, 'thumb').setDisplaySize(48, 48)
-        })
-    ).on('update', this.updateJoystickState, this);
-    this.cursorKeys = this.joyStick.createCursorKeys();
+    // Position joystick in bottom-left corner
+    const joystickX = 100;
+    const joystickY = this.canvasHeight - 100;
 
-    // Listener event to reposition virtual joystick
-    // whatever place you click in game area
-    this.input.on('pointerdown', pointer => {
-        this.joyStick.x = pointer.x;
-        this.joyStick.y = pointer.y;
-        this.joyStick.base.x = pointer.x;
-        this.joyStick.base.y = pointer.y;
-        this.joyStick.thumb.x = pointer.x;
-        this.joyStick.thumb.y = pointer.y;
-    });
+    // Create temporary graphics objects for texture generation, then destroy them
+    const tempBaseGraphics = this.add.graphics()
+      .fillStyle(0x888888, 0.5)
+      .fillCircle(64, 64, 64);
+    
+    const joystickBase = tempBaseGraphics.generateTexture('joystick-base', 128, 128);
+    tempBaseGraphics.destroy(); // Remove the temporary graphics object
+    
+    const tempThumbGraphics = this.add.graphics()
+      .fillStyle(0xcccccc, 0.8)
+      .fillCircle(32, 32, 32);
+    
+    const joystickThumb = tempThumbGraphics.generateTexture('joystick-thumb', 64, 64);
+    tempThumbGraphics.destroy(); // Remove the temporary graphics object
 
-    // Listener event to return virtual 
-    // joystick to its original position
-    this.input.on('pointerup', pointer => {
-        this.joyStick.x = this.staticXJsPos;
-        this.joyStick.y = this.staticYJsPos;
-        this.joyStick.base.x = this.staticXJsPos;
-        this.joyStick.base.y = this.staticYJsPos;
-        this.joyStick.thumb.x = this.staticXJsPos;
-        this.joyStick.thumb.y = this.staticYJsPos;
-        this.lastCursorDirection = "center";
-        this.setCursorDebugInfo();
-    });
+    // Store static position for reset
+    this.staticXJsPos = joystickX;
+    this.staticYJsPos = joystickY;
 
+    // Check if plugin is available, if not create a simple touch-based joystick
+    const plugin = this.plugins.get('rexvirtualjoystickplugin');
+    
+    if (plugin) {
+      // Create the virtual joystick using rex plugin
+      this.joyStick = plugin.add(this, {
+        x: joystickX,
+        y: joystickY,
+        radius: 64,
+        base: this.add.image(0, 0, 'joystick-base').setDisplaySize(128, 128),
+        thumb: this.add.image(0, 0, 'joystick-thumb').setDisplaySize(64, 64),
+        dir: '8dir',   // 8 directions
+        forceMin: 16,
+        enable: true
+      });
+
+      // Create cursor keys from joystick
+      this.joyStickCursors = this.joyStick.createCursorKeys();
+
+      // Update joystick state
+      this.joyStick.on('update', this.updateJoystickState, this);
+
+      // Optional: Allow repositioning joystick on touch/click
+      this.input.on('pointerdown', (pointer) => {
+        // Only reposition if touch is in the lower half of screen
+        if (pointer.y > this.canvasHeight / 2) {
+          this.joyStick.x = pointer.x;
+          this.joyStick.y = pointer.y;
+          this.joyStick.base.x = pointer.x;
+          this.joyStick.base.y = pointer.y;
+          this.joyStick.thumb.x = pointer.x;
+          this.joyStick.thumb.y = pointer.y;
+        }
+      });
+
+      // Return joystick to original position when released
+      this.input.on('pointerup', () => {
+        if (this.joyStick) {
+          this.joyStick.x = this.staticXJsPos;
+          this.joyStick.y = this.staticYJsPos;
+          this.joyStick.base.x = this.staticXJsPos;
+          this.joyStick.base.y = this.staticYJsPos;
+          this.joyStick.thumb.x = this.staticXJsPos;
+          this.joyStick.thumb.y = this.staticYJsPos;
+          this.lastCursorDirection = "center";
+          this.setCursorDebugInfo();
+        }
+      });
+
+    } else {
+      // Fallback: Create a simple touch-based movement system
+      console.warn('Virtual joystick plugin not found, using simple touch controls');
+      this.createSimpleJoystick(joystickX, joystickY);
+    }
+
+    // Track last direction for animations
+    this.lastCursorDirection = "center";
   }
-  
+
+  createSimpleJoystick(x, y) {
+    // Create visual joystick elements
+    this.joystickBase = this.add.image(x, y, 'joystick-base').setDisplaySize(128, 128).setAlpha(0.7);
+    this.joystickThumb = this.add.image(x, y, 'joystick-thumb').setDisplaySize(64, 64).setAlpha(0.8);
+    
+    // Simple cursor keys simulation
+    this.joyStickCursors = {
+      up: { isDown: false },
+      down: { isDown: false },
+      left: { isDown: false },
+      right: { isDown: false }
+    };
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+
+    this.input.on('pointerdown', (pointer) => {
+      const distance = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.joystickBase.x, this.joystickBase.y);
+      if (distance < 64) {
+        isDragging = true;
+        dragStartX = pointer.x;
+        dragStartY = pointer.y;
+      }
+    });
+
+    this.input.on('pointermove', (pointer) => {
+      if (isDragging) {
+        const distance = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.joystickBase.x, this.joystickBase.y);
+        const maxDistance = 50;
+        
+        if (distance <= maxDistance) {
+          this.joystickThumb.x = pointer.x;
+          this.joystickThumb.y = pointer.y;
+        } else {
+          const angle = Phaser.Math.Angle.Between(this.joystickBase.x, this.joystickBase.y, pointer.x, pointer.y);
+          this.joystickThumb.x = this.joystickBase.x + Math.cos(angle) * maxDistance;
+          this.joystickThumb.y = this.joystickBase.y + Math.sin(angle) * maxDistance;
+        }
+
+        // Update cursor keys based on thumb position
+        const deltaX = this.joystickThumb.x - this.joystickBase.x;
+        const deltaY = this.joystickThumb.y - this.joystickBase.y;
+        const deadZone = 20;
+
+        this.joyStickCursors.up.isDown = deltaY < -deadZone;
+        this.joyStickCursors.down.isDown = deltaY > deadZone;
+        this.joyStickCursors.left.isDown = deltaX < -deadZone;
+        this.joyStickCursors.right.isDown = deltaX > deadZone;
+      }
+    });
+
+    this.input.on('pointerup', () => {
+      if (isDragging) {
+        isDragging = false;
+        this.joystickThumb.x = this.joystickBase.x;
+        this.joystickThumb.y = this.joystickBase.y;
+        
+        // Reset all cursor keys
+        this.joyStickCursors.up.isDown = false;
+        this.joyStickCursors.down.isDown = false;
+        this.joyStickCursors.left.isDown = false;
+        this.joyStickCursors.right.isDown = false;
+      }
+    });
+  }
+
   setCursorDebugInfo() {
-    const force = Math.floor(this.joyStick.force * 100) / 100;
-    const angle = Math.floor(this.joyStick.angle * 100) / 100;
+    const force = this.joyStick ? Math.floor((this.joyStick.force || 0) * 100) / 100 : 0;
+    const angle = this.joyStick ? Math.floor((this.joyStick.angle || 0) * 100) / 100 : 0;
     let text = `Direction: ${this.lastCursorDirection}\n`;
     text += `Force: ${force}\n`;
     text += `Angle: ${angle}\n`;
-    text += `FPS: ${this.sys.game.loop.actualFps}\n`;
+    text += `FPS: ${Math.floor(this.sys.game.loop.actualFps)}\n`;
     this.cursorDebugText.setText(text);
   }
 
   updateJoystickState() {
     let direction = '';
-    for (let key in this.cursorKeys) {
-        if (this.cursorKeys[key].isDown) {
+    
+    // Check joystick cursor keys (only if rex plugin joystick exists)
+    if (this.joyStickCursors && this.joyStick && this.joyStick.createCursorKeys) {
+      for (let key in this.joyStickCursors) {
+        if (this.joyStickCursors[key].isDown) {
           direction += key;
         }
+      }
     }
 
-    // If no direction if provided then stop 
-    // the player animations and exit the method
-    if(direction.length === 0) { 
-        this.stopPlayerAnimations();
-        return;
+    // If no direction is provided then stop player animations and exit
+    if (direction.length === 0) { 
+      this.lastCursorDirection = "center";
+      return;
     }
 
-    // If last cursor direction is different
-    //  the stop all player animations
-    if (this.lastCursorDirection !== direction) {
-        this.stopPlayerAnimations();
-    }
-    
     // Set the new cursor direction
     this.lastCursorDirection = direction;
-
-    // Handle the player moving
-    this.movePlayer();
 
     // Set debug info about the cursor
     this.setCursorDebugInfo();
   }
-  */
+
   update(time, delta) {
     if (this.gameWon) return;
 
@@ -159,10 +274,16 @@ export class GameMiddleSchool extends Phaser.Scene {
   movePlayer(delta) {
     const speed = this.player.speed * (delta / 1000);
 
-    if (this.cursors.up.isDown) this.player.y -= speed;
-    if (this.cursors.down.isDown) this.player.y += speed;
-    if (this.cursors.left.isDown) this.player.x -= speed;
-    if (this.cursors.right.isDown) this.player.x += speed;
+    // Check both keyboard and joystick input
+    const up = this.cursors.up.isDown || (this.joyStickCursors && this.joyStickCursors.up.isDown);
+    const down = this.cursors.down.isDown || (this.joyStickCursors && this.joyStickCursors.down.isDown);
+    const left = this.cursors.left.isDown || (this.joyStickCursors && this.joyStickCursors.left.isDown);
+    const right = this.cursors.right.isDown || (this.joyStickCursors && this.joyStickCursors.right.isDown);
+
+    if (up) this.player.y -= speed;
+    if (down) this.player.y += speed;
+    if (left) this.player.x -= speed;
+    if (right) this.player.x += speed;
 
     // Clamp player within bounds
     this.player.x = Phaser.Math.Clamp(this.player.x, 0, this.canvasWidth);
