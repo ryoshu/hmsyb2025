@@ -11,9 +11,9 @@ export class GameCelestialBlue extends Phaser.Scene {
 
   create() {
     // Add message text
-    this.message = this.add.text(0, 0, 'Match the block pattern in the grid.', {
-      fontSize: '48px',
-      color: '#fff',
+    this.message = this.add.text(0, 0, 'Match the block pattern in the grid!', {
+      fontSize: '32px',
+      color: '#000',
     });
     
     // Center the message text
@@ -29,19 +29,13 @@ export class GameCelestialBlue extends Phaser.Scene {
     
     const size = 5;
     let selectedBlock = '🟥';
-
-    // Add message text
-    this.message = this.add.text(0, 0, 'Match the pattern!', {
-      fontSize: '48px',
-      color: '#fff',
-    });
     
     // Center the message text
     Phaser.Display.Align.In.Center(
       this.message,
       this.add.zone(
         this.cameras.main.width / 2,
-        this.cameras.main.height / 2,
+        100,
         this.cameras.main.width,
         this.cameras.main.height
       )

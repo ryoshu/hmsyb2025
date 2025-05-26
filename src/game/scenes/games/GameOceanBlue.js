@@ -62,7 +62,7 @@ export class GameOceanBlue extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#ffffff');
 
     // Create player
-    this.player = this.add.rectangle(playAreaWidth / 2, playAreaHeight - 50, 50, 50, 0x0000ff);
+    this.player = this.add.rectangle(playAreaWidth / 2, playAreaHeight - 200, 50, 50, 0x0000ff);
     this.physics.add.existing(this.player);
     this.player.body.setCollideWorldBounds(true);
 
@@ -110,8 +110,8 @@ export class GameOceanBlue extends Phaser.Scene {
   }
 
   createVirtualJoystick() {
-    const joystickX = 120;
-    const joystickY = this.scale.height - 120;
+    const joystickX = this.scale.width - 150;
+    const joystickY = this.scale.height - 150;
 
     // Generate textures if not already present (for fallback)
     if (!this.textures.exists('joystick-base')) {

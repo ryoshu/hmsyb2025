@@ -67,7 +67,7 @@ export class GameRosyRed extends Phaser.Scene {
 
   gameWin() {
     // Update the message text
-    this.message.setText("You're a super star! 🎉");
+    this.message.setText("✨ You're a super star! ✨");
 
     // Center the message text on the screen
     Phaser.Display.Align.In.Center(

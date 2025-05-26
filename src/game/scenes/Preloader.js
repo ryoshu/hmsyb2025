@@ -9,6 +9,7 @@ export class Preloader extends Scene
 
     init ()
     {
+        /*
         //  We loaded this image in our Boot Scene, so we can display it here
         this.add.image(512, 384, 'background');
 
@@ -25,6 +26,19 @@ export class Preloader extends Scene
             bar.width = 4 + (460 * progress);
 
         });
+        */
+        
+        const logo = this.load.image('logo', 'assets/HM-New-Logo.jpg');
+        // Center the message text on the screen
+        Phaser.Display.Align.In.Center(
+          logo,
+          this.add.zone(
+            this.cameras.main.width / 2,
+            this.cameras.main.height / 2,
+            this.cameras.main.width,
+            this.cameras.main.height
+          )
+        );
     }
 
     preload ()
@@ -32,7 +46,7 @@ export class Preloader extends Scene
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
 
-        this.load.image('logo', 'logo.png');
+        // this.load.image('logo', 'logo.png');
     }
 
     create ()

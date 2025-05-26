@@ -11,18 +11,19 @@ export class GameSereneIndigo extends Phaser.Scene {
   }
 
   create() {
-    // Add message text
-    this.message = this.add.text(0, 0, 'Dodge the blocks to make it across the bridge!', {
-      fontSize: '48px',
-      color: '#fff',
-    });
+  // Game dimensions
+  this.gameWidth = this.sys.game.config.width;
+  this.gameHeight = this.sys.game.config.height;
 
-    // Game dimensions
-    this.gameWidth = this.sys.game.config.width;
-    this.gameHeight = this.sys.game.config.height;
+    // Add message text
+    this.message = this.add.text(this.cameras.main.width / 2, 100, 'Dodge the blocks to make it across the bridge!', {
+      fontSize: '28px',
+      color: '#000',
+    }).setOrigin(0.5);
 
     // Player setup
-    this.player = this.add.rectangle(50, this.gameHeight - 75, 50, 50, 0xff0000);
+    this.player = this.add.rectangle(50, this.gameHeight - 175, 50, 50, 0xff0000);
+    this.player.isStroked = false; // Ensure no outline
     this.physics.add.existing(this.player);
     this.player.body.setCollideWorldBounds(true);
 
@@ -35,7 +36,7 @@ export class GameSereneIndigo extends Phaser.Scene {
     this.score = 0;
     this.scoreText = this.add.text(20, 20, 'Score: 0', {
       fontSize: '24px',
-      fill: '#fff',
+      fill: '#000',
     });
 
     // Input setup
@@ -291,6 +292,7 @@ export class GameSereneIndigo extends Phaser.Scene {
         150,
         0x000000
       );
+      obstacle.isStroked = false; // Ensure no outline
       this.physics.add.existing(obstacle);
       this.obstacles.add(obstacle);
     }

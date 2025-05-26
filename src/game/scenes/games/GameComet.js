@@ -15,7 +15,7 @@ export class GameComet extends Phaser.Scene {
 
   preload() {
     // Load assets
-    this.load.image('match-btn', 'https://cdn.jsdelivr.net/gh/photonstorm/phaser3-examples@master/public/assets/sprites/button-green.png');
+    //this.load.image('match-btn', 'https://cdn.jsdelivr.net/gh/photonstorm/phaser3-examples@master/public/assets/sprites/button-green.png');
   }
 
   create() {
@@ -55,16 +55,24 @@ export class GameComet extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Strike match button
+    
+    /*
     this.matchBtn = this.add.image(centerX, centerY - 50, 'match-btn')
       .setInteractive()
       .setScale(2)
       .on('pointerdown', () => this.strikeMatch());
+    */
 
+    this.matchBtn = this.add.rectangle(centerX, centerY - 50, 180, 50, 0x000000)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => this.strikeMatch());
     // Add match text
     const matchText = this.add.text(centerX, centerY - 50, '🔥 Strike Match', {
       fontSize: '18px',
       color: '#fff'
-    }).setOrigin(0.5);
+    })
+      .setOrigin(0.5)
+      .on('pointerdown', () => this.strikeMatch());;
 
     // Message text
     this.messageText = this.add.text(centerX, centerY + 50, 'Keep trying...', {
@@ -80,7 +88,7 @@ export class GameComet extends Phaser.Scene {
 
     // Add all objects to the group
     this.fireGameGroup.add(title);
-    this.fireGameGroup.add(this.matchBtn);
+    // this.fireGameGroup.add(this.matchBtn);
     this.fireGameGroup.add(matchText);
     this.fireGameGroup.add(this.messageText);
     this.fireGameGroup.add(this.fireIcon);
@@ -184,7 +192,7 @@ export class GameComet extends Phaser.Scene {
       this.messageText.setText('🔥 Fire is lit!');
       this.fireIcon.setText('🔥🔥🔥');
       this.matchBtn.disableInteractive();
-      this.matchBtn.setTint(0x888888);
+      // this.matchBtn.setTint(0x888888);
 
       // Transition to circuit game after delay
       this.time.delayedCall(1000, () => {
