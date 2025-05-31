@@ -27,7 +27,7 @@ export class Preloader extends Scene
 
         });
         */
-        
+        /*
         const logo = this.load.image('logo', 'assets/HM-New-Logo.jpg');
         // Center the message text on the screen
         Phaser.Display.Align.In.Center(
@@ -39,6 +39,7 @@ export class Preloader extends Scene
             this.cameras.main.height
           )
         );
+        */
     }
 
     preload ()
@@ -56,5 +57,6 @@ export class Preloader extends Scene
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('MainMenu');
+        // this.scene.start('GameIntro');
     }
 }

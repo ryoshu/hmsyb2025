@@ -9,6 +9,7 @@ export class GameOceanBlue extends Phaser.Scene {
   preload() {
     // Load the tornado sprite
     this.load.image('tornado', './assets/OB-2.png');
+    this.load.image('windsock', './assets/windsock.png');
 
     // Preload joystick textures (optional, for fallback)
     this.load.once('complete', () => {
@@ -27,6 +28,7 @@ export class GameOceanBlue extends Phaser.Scene {
   }
 
   create() {
+
     // Add message text
     this.message = this.add.text(0, 0, 'Catch the tornadoes!', {
       fontSize: '48px',
@@ -58,11 +60,12 @@ export class GameOceanBlue extends Phaser.Scene {
     const playAreaHeight = this.scale.height - 50; // 50px padding at the bottom
 
     // Add background color
-    // this.cameras.main.setBackgroundColor('#87CEEB');
-    this.cameras.main.setBackgroundColor('#ffffff');
+    this.cameras.main.setBackgroundColor('#87CEEB');
+    //this.cameras.main.setBackgroundColor('#ffffff');
 
     // Create player
-    this.player = this.add.rectangle(playAreaWidth / 2, playAreaHeight - 200, 50, 50, 0x0000ff);
+    this.player = this.add.image(playAreaWidth / 2, playAreaHeight - 200, 'windsock').setScale(0.5);
+    // this.player = this.add.rectangle(playAreaWidth / 2, playAreaHeight - 200, 50, 50, 0x0000ff);
     this.physics.add.existing(this.player);
     this.player.body.setCollideWorldBounds(true);
 

@@ -7,9 +7,14 @@ export class GameAurora extends Phaser.Scene {
 
   preload() {
     // Preload assets if needed
+    this.load.image('background', './assets/pcb_design_short.jpg');
   }
 
   create() {
+    this.add.image(0, 0, 'background').setOrigin(0, 0);
+
+    this.add.rectangle(0,0,this.scale.width, this.scale.height, 0x000000, 0.5).setOrigin(0, 0);
+
     const centerX = this.scale.width / 2;
     const centerY = this.scale.height / 2;
 
@@ -21,14 +26,14 @@ export class GameAurora extends Phaser.Scene {
 
     const heightPadding = 200;
 
-    this.add.text(centerX, 40, 'Wire Circuit Game', { fontSize: '48px', color: '#000' }).setOrigin(0.5);
+    this.add.text(centerX, 40, 'Wire Circuit Game', { fontSize: '48px', color: '#fff' }).setOrigin(0.5);
     this.instructionsText = this.add.text(
       centerX,
       120,
       'Match the wire outputs on the left to the terminal inputs on the right.',
       {
-        fontSize: '24px', // Adjust font size if needed
-        color: '#000',
+        fontSize: '36px', // Adjust font size if needed
+        color: '#fff',
         wordWrap: { width: this.scale.width - 200 }, // Scene width minus 100px padding on both sides
         align: 'center',
       }
@@ -47,8 +52,8 @@ export class GameAurora extends Phaser.Scene {
     const buttonWidth = 100; // Approximate width of each button
     const totalWidth = buttonWidth * 2 + buttonSpacing;
 
-    this.checkButton = this.createButton((centerX - totalWidth / 2) - 300, centerY + 100, 'Check Circuit', () => this.checkCircuit());
-    this.resetButton = this.createButton((centerX + totalWidth / 2) - buttonWidth + 100, centerY + 100, 'Reset Game', () => this.resetGame());
+    this.checkButton = this.createButton((centerX - totalWidth / 2) - 300, centerY, 'Check Circuit', () => this.checkCircuit());
+    this.resetButton = this.createButton((centerX + totalWidth / 2) - buttonWidth + 150, centerY, 'Reset Game', () => this.resetGame());
 
     this.messageText = this.add.text(centerX, centerY - 100, '', { fontSize: '28px', color: '#000' }).setOrigin(0.5);
 
@@ -58,9 +63,9 @@ export class GameAurora extends Phaser.Scene {
 
   createButton(x, y, label, callback) {
     const button = this.add.text(x, y, label, {
-      fontSize: '48px',
+      fontSize: '36px',
       backgroundColor: '#d3d3d3',
-      padding: { x: 15, y: 15 }, // Adjust padding to make the button 50px wide and high
+      padding: { x: 25, y: 25 }, // Adjust padding to make the button 50px wide and high
       color: '#000',
     })
       .setInteractive({ useHandCursor: true })

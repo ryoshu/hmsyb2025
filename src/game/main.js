@@ -1,6 +1,7 @@
 import { Boot } from './scenes/Boot';
 // import { Game as MainGame } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
+import { GameIntro } from './scenes/GameIntro';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
 import { AUTO, Game } from 'phaser';
@@ -29,14 +30,14 @@ const config = {
         Boot,
         Preloader,
         MainMenu,
-        // MainGame,
+        GameIntro,
         GameOver
     ].concat(GAMES),
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: true,
         }
     }
     //,
