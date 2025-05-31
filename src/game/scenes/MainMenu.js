@@ -22,11 +22,30 @@ export class MainMenu extends Scene
         this.load.image('GameComet_icon', 'assets/classroom_icons/Comet.png');
         this.load.image('GameMiddleSchool_icon', 'assets/middle_school_disabled.png');
         this.load.image('GameMiddleSchoolEnabled_icon', 'assets/middle_school.png');
+
+        // Load playedGames from localStorage if available
+        const savedPlayedGames = localStorage.getItem('playedGames');
+        if (savedPlayedGames) {
+            this.registry.set('playedGames', JSON.parse(savedPlayedGames));
+        }
     }
 
 
     create () {
+
+        // Track played games in registry
+        if (!this.registry.has('playedGames')) {
+            this.registry.set('playedGames', {});
+        }
+        let playedGames = this.registry.get('playedGames');
+
         const prevScene = this.registry.get('gameScene');
+        if (prevScene && prevScene.startsWith('Game')) {
+            playedGames[prevScene] = true;
+            this.registry.set('playedGames', playedGames);
+            // Save to localStorage
+            localStorage.setItem('playedGames', JSON.stringify(playedGames));
+        }
         console.log(`Previous scene: ${prevScene}`);
         // Add black background
         this.add.rectangle(0, 0, this.sys.game.config.width, this.sys.game.config.height, 0x000000).setOrigin(0, 0);
@@ -98,6 +117,8 @@ export class MainMenu extends Scene
             let x = centerX;
             let y = baseY + (100 * i);
 
+            const playedGamesCount = Object.keys(playedGames).length;
+            console.log(`games played: ${playedGamesCount}`);
             /*
             console.log("debug: " + i + ">" + Math.floor(GAMES.length * .5));
             console.log(Object.getOwnPropertyNames(GAMES[i]));
@@ -119,20 +140,39 @@ export class MainMenu extends Scene
 
             if(i > 0) {
                 // edge cases
-                let circleBgColor = 0xffffff; // Default to black
+                let circleBgColor = 0xffffff; // Default to white
+                let circleStrokeColor = 0x000000; // Default to black
+
                 if(i === 5 || i === 9) {
                     circleBgColor = 0x000000;
+                    circleStrokeColor = 0xffffff;
                 }
+
                 // Create a white circle with a black 2px stroke
                 const circleBg = this.add.graphics();
-                circleBg.lineStyle(20, 0x000000, 1); // Black stroke, 2px
+                if (playedGames[GAMES[i]]) {
+                    circleBg.lineStyle(30, 0xffd800, 1); // Green stroke, 20px
+                } else {
+                    circleBg.lineStyle(20, circleStrokeColor, 1); // Black stroke, 20px
+                }
+                
                 circleBg.fillStyle(circleBgColor, 1);    // White fill
                 circleBg.strokeCircle(0, 0, 100);   // Draw stroke
                 circleBg.fillCircle(0, 0, 100);     // Draw fill
 
                 classContainer.add(circleBg);
             }
-            const classIcon = this.add.image(0, 0, `${GAMES[i]}_icon`).setScale(iconCoordinates[i].scale);
+
+            let classIcon = null;
+            if(i === 0 && playedGamesCount >= 12) {
+                // handle case where GameMiddleSchool is enabled
+                classIcon = this.add.image(0, 0, `GameMiddleSchoolEnabled_icon`).setScale(iconCoordinates[i].scale);
+            } else {
+                classIcon = this.add.image(0, 0, `${GAMES[i]}_icon`).setScale(iconCoordinates[i].scale);
+            }
+
+
+            
             classContainer.add(classIcon);
 
             /*
@@ -142,13 +182,14 @@ export class MainMenu extends Scene
             });
             classContainer.add(gameButton);
             */
-
-            classIcon.setInteractive();
-            classIcon.on('pointerdown', () => { 
-                this.registry.set('gameScene', GAMES[i]); // Store current scene
-                this.scene.start(GAMES[i]); 
-            });
             
+            if(i > 0 || playedGamesCount >= 12) {
+                classIcon.setInteractive();
+                classIcon.on('pointerdown', () => { 
+                    this.registry.set('gameScene', GAMES[i]); // Store current scene
+                    this.scene.start(GAMES[i]); 
+                });
+            }
         }
         
         console.log(this.textures);
@@ -157,7 +198,7 @@ export class MainMenu extends Scene
 
         // this.add.image(512, 300, 'logo');
 
-        const hmsLockup = this.add.text(centerX, 100, 'Hudson Montessori\nYearbook Game 2025', {
+        const hmsLockup = this.add.text(centerX, 100, 'Save The Yearbook!', {
             fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
