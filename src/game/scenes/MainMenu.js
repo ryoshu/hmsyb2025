@@ -214,6 +214,12 @@ export class MainMenu extends Scene
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
+    
+        const defeatText = this.add.text(centerX, 300, 'Defeat the Virus!', {
+            fontSize: 38, color: '#ff0000',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center'
+        }).setOrigin(0.5);
 
         this.scale.on('resize', this.resizeGame, this);
     }

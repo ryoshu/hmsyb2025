@@ -30,7 +30,7 @@ export class GameOceanBlue extends Phaser.Scene {
   create() {
 
     // Add message text
-    this.message = this.add.text(0, 0, 'Catch the tornadoes!', {
+    this.message = this.add.text(0, 0, 'Catch 10 tornadoes!', {
       fontSize: '48px',
       color: '#000000',
     });
@@ -218,7 +218,7 @@ export class GameOceanBlue extends Phaser.Scene {
     });
 
     // Update score text
-    this.scoreText.setText(`Tornadoes Caught: ${this.caughtCount}`);
+    this.scoreText.setText(`Tornadoes Caught: ${this.caughtCount}/10`);
   }
 
   gameWin() {

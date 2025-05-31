@@ -38,7 +38,7 @@ export class GameHarmoniousOrange extends Phaser.Scene {
         buttonBg.on('pointerdown', this.lowerGeyser, this);
 
         // Set up the button text
-        const buttonText = this.add.text(centerX, centerY + 250, 'Click to Lower the Geyser', {
+        const buttonText = this.add.text(centerX, centerY + 250, 'Click to keep geyser low!', {
             font: '24px',
             fill: '#ffffff'
         }).setOrigin(0.5);

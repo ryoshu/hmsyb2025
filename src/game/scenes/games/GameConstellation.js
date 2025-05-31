@@ -114,7 +114,12 @@ export class GameConstellation extends Phaser.Scene {
       }
     } else {
       this.message.setText('Wrong! Try again.');
-      this.time.delayedCall(1500, () => this.startGame());
+      this.playerPattern = [];
+      this.gamePattern = [];
+      this.isGameActive = false; // Disable input
+      // Disable drum interactivity
+      this.drums.forEach(drum => drum.disableInteractive());
+      this.time.delayedCall(3000, () => this.startGame());
     }
   }
 
@@ -134,6 +139,8 @@ export class GameConstellation extends Phaser.Scene {
     this.playerPattern = [];
     this.level = 0;
     this.message.setText('Get Ready!');
+    // Re-enable drum interactivity
+    this.drums.forEach(drum => drum.setInteractive());
     this.time.delayedCall(1000, () => this.nextSequence());
     this.startButton.setVisible(false); // Hide the start button
   }

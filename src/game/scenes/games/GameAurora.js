@@ -13,7 +13,7 @@ export class GameAurora extends Phaser.Scene {
   create() {
     this.add.image(0, 0, 'background').setOrigin(0, 0);
 
-    this.add.rectangle(0,0,this.scale.width, this.scale.height, 0x000000, 0.5).setOrigin(0, 0);
+    this.add.rectangle(0,0,this.scale.width, this.scale.height, 0x000000, 0.75).setOrigin(0, 0);
 
     const centerX = this.scale.width / 2;
     const centerY = this.scale.height / 2;
@@ -55,7 +55,7 @@ export class GameAurora extends Phaser.Scene {
     this.checkButton = this.createButton((centerX - totalWidth / 2) - 300, centerY, 'Check Circuit', () => this.checkCircuit());
     this.resetButton = this.createButton((centerX + totalWidth / 2) - buttonWidth + 150, centerY, 'Reset Game', () => this.resetGame());
 
-    this.messageText = this.add.text(centerX, centerY - 100, '', { fontSize: '28px', color: '#000' }).setOrigin(0.5);
+    this.messageText = this.add.text(centerX, centerY - 100, '', { fontSize: '48px', color: '#fff' }).setOrigin(0.5);
 
     this.graphics = this.add.graphics();
     this.resetGame();
@@ -149,7 +149,7 @@ export class GameAurora extends Phaser.Scene {
   }
 
   gameWin() {
-    this.messageText.setText("✅ Circuit Complete! You're a circuit master!");
+    this.messageText.setText("✅ Circuit Complete! ✅\nYou're a circuit master!");
 
     this.checkButton.visible = false;
     this.resetButton.visible = false;

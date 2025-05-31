@@ -202,8 +202,8 @@ export class GameOrangeBlossom extends Scene {
         const levelTitle = this.add.text(this.centerX, headerY, `Level ${level}`, this.titleStyle).setOrigin(0.5);
         this.timerText = this.add.text(this.centerX, headerY + 40, 'Time: ', this.textStyle).setOrigin(0.5);
         this.messageText = this.add.text(this.centerX, headerY + 70, '', this.textStyle).setOrigin(0.5);
-        
-        this.gameGroup.addMultiple([levelTitle, this.timerText, this.messageText]);
+        this.instructions = this.add.text(this.centerX, headerY + 100, 'Match the planets and moons!', this.textStyle).setOrigin(0.5);
+        this.gameGroup.addMultiple([levelTitle, this.timerText, this.messageText, this.instructions]);
         
         // Prepare cards
         const planetCards = this.cardsData.filter(item => item.type === 'planet').slice(0, config.planets);

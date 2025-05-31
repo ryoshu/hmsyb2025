@@ -29,8 +29,13 @@ export class GameGalaxy extends Phaser.Scene {
     const startY = (this.cameras.main.height - gridHeight) / 2 + 30; // Adding a bit of space for title
     
     // Create title
-    this.add.text(this.cameras.main.width / 2, startY - 50, 'Laser Mirror Puzzle', {
-      fontSize: '28px',
+    this.add.text(this.cameras.main.width / 2, startY - 80, 'Laser Mirror Puzzle', {
+      fontSize: '48px',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+    
+    this.add.text(this.cameras.main.width / 2, startY + 725, 'Reposition mirrors to move light\nfrom start to finish.', {
+      fontSize: '48px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
