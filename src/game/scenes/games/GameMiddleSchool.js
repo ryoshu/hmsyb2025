@@ -24,7 +24,7 @@ export class GameMiddleSchool extends Phaser.Scene {
 
     // Boss setup
     this.boss = this.add.circle(this.canvasWidth / 2, this.canvasHeight / 2, 50, 0x00ff00);
-    this.boss.maxHealth = 50;
+    this.boss.maxHealth = 300;
     this.boss.health = this.boss.maxHealth;
     this.boss.lasers = [];
 
@@ -71,9 +71,9 @@ export class GameMiddleSchool extends Phaser.Scene {
   }
 
   createVirtualJoystick() {
-    // Position joystick in bottom-left corner
-    const joystickX = this.canvasWidth - 100;
-    const joystickY = this.canvasHeight - 300;
+    // Position joystick in bottom-right corner
+    const joystickX = this.scale.width - 150;
+    const joystickY = this.scale.height - 150;
 
     // Create temporary graphics objects for texture generation, then destroy them
     const tempBaseGraphics = this.add.graphics()
@@ -273,7 +273,7 @@ export class GameMiddleSchool extends Phaser.Scene {
 
     do {
       x = Phaser.Math.Between(spotRadius, this.canvasWidth - spotRadius);
-      y = Phaser.Math.Between(spotRadius, this.canvasHeight - spotRadius);
+      y = Phaser.Math.Between(spotRadius, this.canvasHeight - spotRadius - 150);
     } while (Phaser.Math.Distance.Between(x, y, this.boss.x, this.boss.y) < minDistance);
 
     if (this.damageSpot) this.damageSpot.destroy();

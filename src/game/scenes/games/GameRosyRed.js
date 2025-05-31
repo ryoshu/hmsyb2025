@@ -6,11 +6,30 @@ export class GameRosyRed extends Phaser.Scene {
     this.score = 0;
     this.maxScore = 10;
     this.starsOnScreen = 3;
+    this.starParticles = [];
+  }
+
+  preload() {
+    this.load.image('particle', 'assets/star.png');
   }
 
   create() {
     // Set background color
     this.cameras.main.setBackgroundColor('#000');
+        
+    // Create star background
+    const starGraphics = this.add.graphics();
+    starGraphics.fillStyle(0xFFFFFF);
+    for (let i = 0; i < 400; i++) {
+        const x = Math.random() * this.gameWidth;
+        const y = Math.random() * this.gameHeight;
+        const size = Math.random() * 2 + 0.5;
+        const alpha = Math.random() * 0.8 + 0.2;
+        starGraphics.fillStyle(0xFFFFFF, alpha);
+        starGraphics.fillCircle(x, y, size);
+    }
+    starGraphics.generateTexture('stars', this.gameWidth, this.gameHeight);
+    starGraphics.destroy();
     
     // Add message text
     this.message = this.add.text(0, 0, 'Click 10 stars to win!', {
@@ -33,6 +52,16 @@ export class GameRosyRed extends Phaser.Scene {
     for (let i = 0; i < this.starsOnScreen; i++) {
       this.spawnStar();
     }
+
+    this.emitter = this.add.particles(this.cameras.main.width / 2, this.cameras.main.height / 2, 'particle', {
+        frame: [ 'yellow' ],
+        lifespan: 4000,
+        speed: { min: 20, max: 250 },
+        scale: { start: 0.8, end: 0 },
+        gravityY: 150,
+        blendMode: 'ADD',
+        emitting: false
+    });
   }
 
   spawnStar() {
@@ -66,8 +95,10 @@ export class GameRosyRed extends Phaser.Scene {
   }
 
   gameWin() {
+    this.emitter.explode(16);
+
     // Update the message text
-    this.message.setText("You're a super star! 🎉");
+    this.message.setText("✨ You're a super star! ✨");
 
     // Center the message text on the screen
     Phaser.Display.Align.In.Center(

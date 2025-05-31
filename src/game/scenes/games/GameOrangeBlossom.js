@@ -153,9 +153,9 @@ export class GameOrangeBlossom extends Scene {
     
     setupUI() {
         // Create text styles
-        this.titleStyle = { fontSize: '32px', fill: '#ffffff', align: 'center' };
-        this.textStyle = { fontSize: '18px', fill: '#ffffff', align: 'center' };
-        this.buttonStyle = { fontSize: '20px', fill: '#ffffff', backgroundColor: '#4CAF50', padding: { x: 20, y: 10 } };
+        this.titleStyle = { fontSize: '48px', fill: '#ffffff', align: 'center' };
+        this.textStyle = { fontSize: '28px', fill: '#ffffff', align: 'center' };
+        this.buttonStyle = { fontSize: '28px', fill: '#ffffff', backgroundColor: '#4CAF50', padding: { x: 40, y: 20 } };
         
         // Create UI groups for different screens
         this.instructionsGroup = this.add.group();
@@ -173,7 +173,7 @@ export class GameOrangeBlossom extends Scene {
         const instructions2 = this.add.text(this.centerX, this.centerY - 50, 'Match two of the same to make them disappear!', this.textStyle).setOrigin(0.5);
         const instructions3 = this.add.text(this.centerX, this.centerY - 20, 'Clear all matches before time runs out to win!', this.textStyle).setOrigin(0.5);
         
-        const startButton = this.add.text(this.centerX, this.centerY + 50, 'Start Level 1', this.buttonStyle)
+        const startButton = this.add.text(this.centerX, this.centerY + 50, 'Start!', this.buttonStyle)
             .setOrigin(0.5)
             .setInteractive()
             .on('pointerdown', () => this.startGame())
@@ -336,13 +336,16 @@ export class GameOrangeBlossom extends Scene {
         this.clearAllGroups();
         this.score += this.timeLeft * 10;
         
-        const title = this.add.text(this.centerX, this.centerY - 100, 'Level Complete!', this.titleStyle).setOrigin(0.5);
-        const stars = this.add.text(this.centerX, this.centerY - 50, this.getStarsDisplay(), { fontSize: '40px', fill: '#FFD700' }).setOrigin(0.5);
+        //const title = this.add.text(this.centerX, this.centerY - 100, 'Level Complete!', this.titleStyle).setOrigin(0.5);
+        //const title = this.add.text(this.centerX, this.centerY - 100, 'You Win!', this.titleStyle).setOrigin(0.5);
+        // const stars = this.add.text(this.centerX, this.centerY - 50, this.getStarsDisplay(), { fontSize: '40px', fill: '#FFD700' }).setOrigin(0.5);
         
-        this.victoryGroup.addMultiple([title, stars]);
+        // this.victoryGroup.addMultiple([title, stars]);
         
-        if (this.currentLevel === 3) {
-            this.time.delayedCall(1000, () => this.showFinalScreen());
+        if (this.currentLevel === 1) {
+        //if (this.currentLevel === 3) {
+            this.showFinalScreen();
+            this.time.delayedCall(3000, () => this.scene.start('MainMenu'));
         } else {
             this.startCooldown();
         }
@@ -458,12 +461,15 @@ export class GameOrangeBlossom extends Scene {
         const subtitle = this.add.text(this.centerX, this.centerY - 20, 'You matched all planets and moons!', this.textStyle).setOrigin(0.5);
         const scoreText = this.add.text(this.centerX, this.centerY + 20, `Total Points: ${this.score}`, this.textStyle).setOrigin(0.5);
         
+        /*
         const playAgainButton = this.add.text(this.centerX, this.centerY + 100, 'Play Again', this.buttonStyle)
             .setOrigin(0.5)
             .setInteractive()
             .on('pointerdown', () => this.backToInstructions());
-        
-        this.finalGroup.addMultiple([title, stars, subtitle, scoreText, playAgainButton]);
+        */
+
+        // this.finalGroup.addMultiple([title, stars, subtitle, scoreText, playAgainButton]);
+        this.finalGroup.addMultiple([title, stars, subtitle, scoreText]);
     }
     
     clearAllGroups() {

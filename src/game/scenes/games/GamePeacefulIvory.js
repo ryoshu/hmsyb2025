@@ -6,16 +6,16 @@ export class GamePeacefulIvory extends Phaser.Scene {
     this.score = 0;
     this.totalBoxes = 25;
     this.imageSources = [
-      '/assets/peaceful_ivory/pyramids-clipart-xl.png',
-      '/assets/peaceful_ivory/melindak-roman-colosseum-clipart-xl.png',
-      '/assets/peaceful_ivory/ancient-mayan-pyramid-cartoon-icon-white-background-vector-illustration_1284-66707.jpg',
-      '/assets/peaceful_ivory/ancient-rome-column-architectural-clipart-10672.jpg',
-      '/assets/peaceful_ivory/great-wall-of-china-clipart-md.png',
-      '/assets/peaceful_ivory/stonehenge-stones-clipart-vector-art-illustration_761413-36803.jpg',
-      '/assets/peaceful_ivory/ancient-chinese-pagoda-61315.jpg',
-      '/assets/peaceful_ivory/taj-mahal-icon-travel-landmarks-design-illustration.jpg',
-      '/assets/peaceful_ivory/petra-clipart-md.png',
-      '/assets/peaceful_ivory/djinguereber-mosque-in-timbuktu-mali.jpg'
+      './assets/pyramids-clipart-xl.jpg',
+      './assets/melindak-roman-colosseum-clipart-xl.jpg',
+      './assets/ancient-mayan-pyramid-cartoon-icon-white-background-vector-illustration_1284-66707.jpg',
+      './assets/ancient-rome-column-architectural-clipart-10672.jpg',
+      './assets/great-wall-of-china-clipart-md.jpg',
+      './assets/stonehenge-stones-clipart-vector-art-illustration_761413-36803.jpg',
+      './assets/ancient-chinese-pagoda-61315.jpg',
+      './assets/taj-mahal-icon-travel-landmarks-design-illustration.jpg',
+      './assets/petra-clipart-md.jpg',
+      './assets/djinguereber-mosque-in-timbuktu-mali.jpg'
     ];
     this.targetImageSrc = '';
     this.resultDisplayTimer = null;

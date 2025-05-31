@@ -8,21 +8,39 @@ export class GameSereneIndigo extends Phaser.Scene {
 
   preload() {
     // Preload assets if needed
+    this.load.image('bridge', './assets/bridge.png');
+    this.load.image('bicycle', './assets/bicycle-top-down.png');
+    this.load.image('bike1', './assets/bike1.png');
+    this.load.image('bike2', './assets/bike2.png');
+    this.load.image('bike3', './assets/bike3.png');
+    this.load.image('bike4', './assets/bike4.png');
+    this.load.image('bike5', './assets/bike5.png');
   }
 
   create() {
-    // Add message text
-    this.message = this.add.text(0, 0, 'Dodge the blocks to make it across the bridge!', {
-      fontSize: '48px',
-      color: '#fff',
-    });
-
     // Game dimensions
     this.gameWidth = this.sys.game.config.width;
     this.gameHeight = this.sys.game.config.height;
 
+    const bridgeImgWidth = 650;
+    const bridgeImgHeight = 840;
+
+    this.bridgeTopBound = 350;
+    this.bridgeBottomBound = this.gameHeight - 350;
+
+    this.bridgeBackground = this.add.tileSprite(743, 960, 1486, 1920, "bridge");
+
+    // Add message text
+    this.message = this.add.text(this.cameras.main.width / 2, 175, 'Race the cyclists to make it across the bridge!', {
+      fontSize: '28px',
+      color: '#fff',
+    }).setOrigin(0.5);
+
     // Player setup
-    this.player = this.add.rectangle(50, this.gameHeight - 75, 50, 50, 0xff0000);
+    const bicycle = this.add.image(100, this.gameHeight / 2, 'bicycle').setOrigin(0.5, 0.5);
+
+    this.player = bicycle;
+    this.player.isStroked = false; // Ensure no outline
     this.physics.add.existing(this.player);
     this.player.body.setCollideWorldBounds(true);
 
@@ -37,6 +55,7 @@ export class GameSereneIndigo extends Phaser.Scene {
       fontSize: '24px',
       fill: '#fff',
     });
+
 
     // Input setup
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -59,6 +78,8 @@ export class GameSereneIndigo extends Phaser.Scene {
 
     // Win condition
     this.hasWon = false;
+
+    
   }
 
   createVirtualJoystick() {
@@ -248,6 +269,7 @@ export class GameSereneIndigo extends Phaser.Scene {
   }
 
   update() {
+    this.bridgeBackground.tilePositionX += 5;
     // Player movement - combining keyboard and virtual controls (only up/down)
     const movingUp = (this.cursors.up.isDown || this.isMovingUp) && this.player.y > 25;
     const movingDown = (this.cursors.down.isDown || this.isMovingDown) && this.player.y < this.gameHeight - 25;
@@ -283,7 +305,20 @@ export class GameSereneIndigo extends Phaser.Scene {
   }
 
   createObstacles() {
+
     for (let i = 0; i < 3; i++) {
+      const spawnY = Phaser.Math.Between(this.bridgeTopBound, this.bridgeBottomBound);
+      console.log("spawnY: " + spawnY);
+      console.log(this.bridgeTopBound);
+      console.log(this.bridgeBottomBound);
+
+      const obstacle = this.add.sprite(
+        this.gameWidth + i * 200,
+        spawnY,
+        `bike${ Math.floor(Math.random()*5) + 1 }`
+      ).setOrigin(0.5, 0.5);
+      
+      /*
       const obstacle = this.add.rectangle(
         this.gameWidth + i * 200,
         Phaser.Math.Between(75, this.gameHeight - 75),
@@ -291,6 +326,7 @@ export class GameSereneIndigo extends Phaser.Scene {
         150,
         0x000000
       );
+      */
       this.physics.add.existing(obstacle);
       this.obstacles.add(obstacle);
     }
