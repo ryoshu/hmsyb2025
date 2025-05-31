@@ -108,6 +108,7 @@ export class GameSunnyYellow extends Phaser.Scene {
 }
 
 // Add this scene to a Phaser game instance
+/*
 const config = {
   type: Phaser.AUTO,
   width: 800,
@@ -116,3 +117,4 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+*/

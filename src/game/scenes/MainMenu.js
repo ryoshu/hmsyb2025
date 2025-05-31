@@ -194,6 +194,17 @@ export class MainMenu extends Scene
         
         console.log(this.textures);
 
+        // Log active scenes
+        const activeScenes = [];
+        for (const key in this.scene.manager.keys) {
+            const scene = this.scene.manager.keys[key];
+            if (scene.scene && scene.scene.isActive()) {
+                activeScenes.push(key);
+                console.log(`Active scene: ${key}`);
+            }
+        }
+        console.log('Active scenes:', activeScenes);
+
         // this.add.image(512, 384, 'background');
 
         // this.add.image(512, 300, 'logo');
