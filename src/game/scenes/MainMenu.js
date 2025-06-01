@@ -33,6 +33,36 @@ export class MainMenu extends Scene
 
     create () {
 
+        // add a method to reset the played games registry when the 'X' key is pressed
+        this.input.keyboard.on('keydown-X', () => {
+            this.registry.set('playedGames', {});
+            localStorage.removeItem('playedGames');
+            console.log('Played games reset.');
+            this.scene.restart();
+        });
+        // add a method to set all games as played when the 'Y' key is pressed
+        this.input.keyboard.on('keydown-Y', () => {
+            const playedGames = {
+                GameRosyRed: true,
+                GameOrangeBlossom: true,
+                GameSunnyYellow: true,
+                GameCelestialBlue: true,
+                GameHarmoniousOrange: true,
+                GamePeacefulIvory: true,
+                GameSereneIndigo: true,
+                GameOceanBlue: true,
+                GameAurora: true,
+                GameConstellation: true,
+                GameGalaxy: true,
+                GameComet: true,
+                GameMiddleSchool: true
+            };
+            this.registry.set('playedGames', playedGames);
+            localStorage.setItem('playedGames', JSON.stringify(playedGames));
+            console.log('All games set as played.');
+            // Reload the scene to reflect changes
+            this.scene.restart();
+        });
         // Track played games in registry
         if (!this.registry.has('playedGames')) {
             this.registry.set('playedGames', {});
@@ -94,19 +124,19 @@ export class MainMenu extends Scene
         this.canvasHeight = this.sys.game.config.height;
 
         const iconCoordinates = [
-            {x : centerX + 150, y: this.canvasHeight - 150, scale: 1.15}, // GameRosyRed
-            {x : centerX - 150,  y: this.canvasHeight - 150, scale: 1.15}, // GameOrangeBlossom 
-            {x : centerX + 250, y: this.canvasHeight - 450, scale: .75}, // GameSunnyYellow
-            {x : centerX, y: this.canvasHeight - 400, scale: .5}, // GameCelestialBlue
-            {x : centerX - 250, y: this.canvasHeight - 450, scale: .75}, // GameHarmoniousOrange
-            {x : centerX + 275, y: this.canvasHeight - 700, scale: .5}, // GamePeacefulIvory
-            {x : centerX, y: this.canvasHeight - 650, scale: .75}, // GameSereneIndigo
-            {x : centerX - 275, y: this.canvasHeight - 700, scale: .5}, // GameOceanBlue
-            {x : centerX + 300, y: this.canvasHeight - 950, scale: .75}, // GameAurora
-            {x : centerX, y: this.canvasHeight - 900, scale: .75}, // GameConstellation
-            {x : centerX - 300, y: this.canvasHeight - 950, scale: .75}, // GameGalaxy
-            {x : centerX, y: this.canvasHeight - 1150, scale: .75}, // GameComet
-            {x : centerX, y: this.canvasHeight - 1650, scale: 1}, // GameMiddleSchool
+            {x : centerX + 150, y: this.canvasHeight - 150, scale: 1.15, abbrv: 'RR'}, // GameRosyRed
+            {x : centerX - 150,  y: this.canvasHeight - 150, scale: 1.15, abbrv: 'ORB'}, // GameOrangeBlossom 
+            {x : centerX + 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'SY'}, // GameSunnyYellow
+            {x : centerX, y: this.canvasHeight - 400, scale: .5, abbrv: 'CB'}, // GameCelestialBlue
+            {x : centerX - 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'HO'}, // GameHarmoniousOrange
+            {x : centerX + 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'PI'}, // GamePeacefulIvory
+            {x : centerX, y: this.canvasHeight - 650, scale: .75, abbrv: 'SI'}, // GameSereneIndigo
+            {x : centerX - 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'OB'}, // GameOceanBlue
+            {x : centerX + 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'AUR'}, // GameAurora
+            {x : centerX, y: this.canvasHeight - 900, scale: .75, abbrv: 'CNS'}, // GameConstellation
+            {x : centerX - 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'GAL'}, // GameGalaxy
+            {x : centerX, y: this.canvasHeight - 1150, scale: .75, abbrv: 'COM'}, // GameComet
+            {x : centerX, y: this.canvasHeight - 1650, scale: 1, abbrv: 'MS'}, // GameMiddleSchool
         ]
 
         iconCoordinates.reverse(); // Reverse the coordinates to match the reversed game order
@@ -167,8 +197,28 @@ export class MainMenu extends Scene
             if(i === 0 && playedGamesCount >= 12) {
                 // handle case where GameMiddleSchool is enabled
                 classIcon = this.add.image(0, 0, `GameMiddleSchoolEnabled_icon`).setScale(iconCoordinates[i].scale);
+                
             } else {
                 classIcon = this.add.image(0, 0, `${GAMES[i]}_icon`).setScale(iconCoordinates[i].scale);
+            }
+            
+            classContainer.add(classIcon);
+
+            if(i > 0) {
+                // add a text label for the game that's the name of the game
+                //make sure the label is above the icon in z-index
+                const labelTxt = iconCoordinates[i].abbrv;
+                // label at bottom of circle
+                
+                const gameLabel = this.add.text(0, 110, labelTxt, { 
+                    fill: '#fff',
+                    fontSize: 36,
+                    align: 'center',
+                    fontWeight: 'bold',
+                    stroke: '#000',
+                    strokeThickness: 10
+                }).setOrigin(0.5);
+                classContainer.add(gameLabel);
             }
 
 

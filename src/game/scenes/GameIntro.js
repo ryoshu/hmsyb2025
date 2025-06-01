@@ -22,15 +22,15 @@ export class GameIntro extends Scene
             key: 'distort',
             frames: [
                 { key: 'logo' },
-                { key: 'logo-inverted' },
                 { key: 'logo-distorted' },
-                { key: 'logo-inverted-distorted' },
-                { key: 'logo' },
                 { key: 'logo-inverted' },
-                { key: 'logo-distorted' },
                 { key: 'logo-inverted-distorted' },
-                { key: 'logo' },
+                // { key: 'logo' },
                 { key: 'logo-inverted' },
+                //{ key: 'logo-distorted' },
+                //{ key: 'logo-inverted-distorted' },
+                //{ key: 'logo' },
+                //{ key: 'logo-inverted' },
             ],
             frameRate: 24,
             repeat: 1
@@ -60,8 +60,12 @@ export class GameIntro extends Scene
             'logo'
         )
         
-        this.time.delayedCall(1000, () => {
+        this.time.delayedCall(1500, () => {
             logoSprite.play('distort');
+
+            this.time.delayedCall(1000, () => {
+                this.scene.start('Story'); // Replace 'MainMenu' with the actual key of your main menu scene
+            });
         });
 
         this.cameras.main.setBackgroundColor(0xffffff);
