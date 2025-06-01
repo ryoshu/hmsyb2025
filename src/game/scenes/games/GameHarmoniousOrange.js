@@ -73,6 +73,22 @@ export class GameHarmoniousOrange extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+
+        this.classroom = this.add.text(0,0, 'Harmonious Orange', {
+            fontSize: '48px',
+            color: '#fff',
+        });
+    
+        // Center the message text
+        Phaser.Display.Align.In.Center(
+            this.classroom,
+            this.add.zone(
+            this.cameras.main.width / 2,
+            20,
+            this.cameras.main.width,
+            this.cameras.main.height
+            )
+        );
     }
 
     updateGeyser() {

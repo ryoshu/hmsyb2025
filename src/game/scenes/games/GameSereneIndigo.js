@@ -79,7 +79,21 @@ export class GameSereneIndigo extends Phaser.Scene {
     // Win condition
     this.hasWon = false;
 
-    
+    this.classroom = this.add.text(0,0, 'Serene Indigo', {
+      fontSize: '48px',
+      color: '#fff',
+    });
+
+    // Center the message text
+    Phaser.Display.Align.In.Center(
+      this.classroom,
+      this.add.zone(
+        this.cameras.main.width / 2,
+        20,
+        this.cameras.main.width,
+        this.cameras.main.height
+      )
+    );
   }
 
   createVirtualJoystick() {

@@ -141,6 +141,22 @@ export class GameOrangeBlossom extends Scene {
         
         // Handle window resize
         this.scale.on('resize', this.handleResize, this);
+
+        this.classroom = this.add.text(0,0, 'Orange Blossom', {
+            fontSize: '48px',
+            color: '#fff',
+        });
+
+        // Center the message text
+        Phaser.Display.Align.In.Center(
+            this.classroom,
+            this.add.zone(
+            this.cameras.main.width / 2,
+            20,
+            this.cameras.main.width,
+            this.cameras.main.height
+            )
+        );
     }
     
     handleResize() {
@@ -265,7 +281,7 @@ export class GameOrangeBlossom extends Scene {
             this.gameGroup.add(planet);
         });
         
-        this.startTimer(config.time);
+        // this.startTimer(config.time);
     }
     
     selectPlanet(planet) {

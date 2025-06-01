@@ -69,6 +69,22 @@ export class GamePeacefulIvory extends Phaser.Scene {
       strokeThickness: 3
     }).setOrigin(0.5);
     this.winScreen.setVisible(false);
+
+    this.classroom = this.add.text(0,0, 'Peaceful Ivory', {
+      fontSize: '48px',
+      color: '#fff',
+    });
+
+    // Center the message text
+    Phaser.Display.Align.In.Center(
+      this.classroom,
+      this.add.zone(
+        this.cameras.main.width / 2,
+        20,
+        this.cameras.main.width,
+        this.cameras.main.height
+      )
+    );
   }
 
   createGameBoard() {

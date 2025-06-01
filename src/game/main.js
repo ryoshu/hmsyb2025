@@ -4,6 +4,8 @@ import { GameOver } from './scenes/GameOver';
 import { GameIntro } from './scenes/GameIntro';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
+import { Story } from './scenes/Story';
+import { GameWin } from './scenes/GameWin';
 import { AUTO, Game } from 'phaser';
 
 import { GAMES } from './Settings';
@@ -29,9 +31,11 @@ const config = {
     scene: [
         Boot,
         Preloader,
+        Story,
         MainMenu,
         GameIntro,
-        GameOver
+        GameOver,
+        GameWin,
     ].concat(GAMES),
     physics: {
         default: 'arcade',

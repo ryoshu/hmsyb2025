@@ -16,7 +16,7 @@ export class GameRosyRed extends Phaser.Scene {
   create() {
     // Set background color
     this.cameras.main.setBackgroundColor('#000');
-        
+    
     // Create star background
     const starGraphics = this.add.graphics();
     starGraphics.fillStyle(0xFFFFFF);
@@ -62,6 +62,22 @@ export class GameRosyRed extends Phaser.Scene {
         blendMode: 'ADD',
         emitting: false
     });
+
+    this.classroom = this.add.text(0,0, 'Rosy Red', {
+      fontSize: '48px',
+      color: '#fff',
+    });
+
+    // Center the message text
+    Phaser.Display.Align.In.Center(
+      this.classroom,
+      this.add.zone(
+        this.cameras.main.width / 2,
+        20,
+        this.cameras.main.width,
+        this.cameras.main.height
+      )
+    );
   }
 
   spawnStar() {
@@ -83,7 +99,7 @@ export class GameRosyRed extends Phaser.Scene {
       // Move the message to the top of the screen with 20px padding and center it horizontally
       if (this.score === 1) {
         const centerX = this.cameras.main.width / 2 - this.message.width / 2;
-        this.message.setPosition(centerX, 20);
+        this.message.setPosition(centerX, 80);
       }
 
       if (this.score >= this.maxScore) {

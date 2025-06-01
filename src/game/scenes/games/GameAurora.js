@@ -58,7 +58,22 @@ export class GameAurora extends Phaser.Scene {
     this.messageText = this.add.text(centerX, centerY - 100, '', { fontSize: '48px', color: '#fff' }).setOrigin(0.5);
 
     this.graphics = this.add.graphics();
-    this.resetGame();
+    this.resetGame();    
+    this.classroom = this.add.text(0,0, 'Aurora', {
+      fontSize: '48px',
+      color: '#fff',
+    });
+
+    // Center the message text
+    Phaser.Display.Align.In.Center(
+      this.classroom,
+      this.add.zone(
+        this.cameras.main.width / 2,
+        20,
+        this.cameras.main.width,
+        this.cameras.main.height
+      )
+    );
   }
 
   createButton(x, y, label, callback) {
