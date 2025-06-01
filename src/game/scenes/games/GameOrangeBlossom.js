@@ -304,7 +304,9 @@ export class GameOrangeBlossom extends Scene {
                     this.selected = [];
                     
                     if (this.matchedPairs === this.totalPairs) {
-                        this.timer.remove();
+                        console.log('before timer remvoed');
+                        // this.timer.remove();
+                        console.log('after timer remvoed');
                         this.time.delayedCall(500, () => this.showVictoryScreen());
                     }
                 });
@@ -324,6 +326,7 @@ export class GameOrangeBlossom extends Scene {
     }
     
     startTimer(seconds) {
+        /*
         this.timeLeft = seconds;
         this.updateTimerDisplay();
         
@@ -341,6 +344,7 @@ export class GameOrangeBlossom extends Scene {
             },
             loop: true
         });
+        */
     }
     
     updateTimerDisplay() {
@@ -408,7 +412,8 @@ export class GameOrangeBlossom extends Scene {
             callback: () => {
                 countdown--;
                 if (countdown <= 0) {
-                    countdownTimer.remove();
+                    console.log("countdownTimer.remove();")
+                    // countdownTimer.remove();
                     this.showVictoryButtons();
                 } else {
                     cooldownText.setText(`Next level in ${countdown}...`);
@@ -494,9 +499,11 @@ export class GameOrangeBlossom extends Scene {
         this.victoryGroup.clear(true, true);
         this.finalGroup.clear(true, true);
         
+        /*
         if (this.timer) {
             this.timer.remove();
         }
+        */
     }
     
     shuffle(array) {
