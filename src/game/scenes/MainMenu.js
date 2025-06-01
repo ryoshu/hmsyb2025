@@ -123,23 +123,27 @@ export class MainMenu extends Scene
         this.canvasWidth = this.sys.game.config.width;
         this.canvasHeight = this.sys.game.config.height;
 
-        const iconCoordinates = [
-            {x : centerX + 150, y: this.canvasHeight - 150, scale: 1.15, abbrv: 'RR'}, // GameRosyRed
-            {x : centerX - 150,  y: this.canvasHeight - 150, scale: 1.15, abbrv: 'ORB'}, // GameOrangeBlossom 
-            {x : centerX + 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'SY'}, // GameSunnyYellow
-            {x : centerX, y: this.canvasHeight - 400, scale: .5, abbrv: 'CB'}, // GameCelestialBlue
-            {x : centerX - 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'HO'}, // GameHarmoniousOrange
-            {x : centerX + 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'PI'}, // GamePeacefulIvory
-            {x : centerX, y: this.canvasHeight - 650, scale: .75, abbrv: 'SI'}, // GameSereneIndigo
-            {x : centerX - 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'OB'}, // GameOceanBlue
-            {x : centerX + 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'AUR'}, // GameAurora
-            {x : centerX, y: this.canvasHeight - 900, scale: .75, abbrv: 'CNS'}, // GameConstellation
-            {x : centerX - 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'GAL'}, // GameGalaxy
-            {x : centerX, y: this.canvasHeight - 1150, scale: .75, abbrv: 'COM'}, // GameComet
-            {x : centerX, y: this.canvasHeight - 1650, scale: 1, abbrv: 'MS'}, // GameMiddleSchool
+        const GAME_BEATEN = 0;
+        const GAME_LOCKED = 1;
+        const GAME_UNLOCKED = 2;
+
+        const gameTokens = [
+            {x : centerX + 150, y: this.canvasHeight - 150, scale: 1.15, abbrv: 'RR', state: GAME_UNLOCKED}, // GameRosyRed
+            {x : centerX - 150,  y: this.canvasHeight - 150, scale: 1.15, abbrv: 'ORB', state: GAME_LOCKED}, // GameOrangeBlossom 
+            {x : centerX + 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'SY', state: GAME_LOCKED}, // GameSunnyYellow
+            {x : centerX, y: this.canvasHeight - 400, scale: .5, abbrv: 'CB', state: GAME_LOCKED}, // GameCelestialBlue
+            {x : centerX - 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'HO', state: GAME_LOCKED}, // GameHarmoniousOrange
+            {x : centerX + 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'PI', state: GAME_LOCKED}, // GamePeacefulIvory
+            {x : centerX, y: this.canvasHeight - 650, scale: .75, abbrv: 'SI', state: GAME_LOCKED}, // GameSereneIndigo
+            {x : centerX - 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'OB', state: GAME_LOCKED}, // GameOceanBlue
+            {x : centerX + 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'AUR', state: GAME_LOCKED}, // GameAurora
+            {x : centerX, y: this.canvasHeight - 900, scale: .75, abbrv: 'CNS', state: GAME_LOCKED}, // GameConstellation
+            {x : centerX - 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'GAL', state: GAME_LOCKED}, // GameGalaxy
+            {x : centerX, y: this.canvasHeight - 1150, scale: .75, abbrv: 'COM', state: GAME_LOCKED}, // GameComet
+            {x : centerX, y: this.canvasHeight - 1650, scale: 1, abbrv: 'MS', state: GAME_LOCKED}, // GameMiddleSchool
         ]
 
-        iconCoordinates.reverse(); // Reverse the coordinates to match the reversed game order
+        gameTokens.reverse(); // Reverse the coordinates to match the reversed game order
 
         const baseY = 200;
 
@@ -149,18 +153,8 @@ export class MainMenu extends Scene
 
             const playedGamesCount = Object.keys(playedGames).length;
             console.log(`games played: ${playedGamesCount}`);
-            /*
-            console.log("debug: " + i + ">" + Math.floor(GAMES.length * .5));
-            console.log(Object.getOwnPropertyNames(GAMES[i]));
-            console.log(GAMES[i])
             
-            if(i > Math.floor(GAMES.length * .5)) {
-                x = centerX + 50;
-                y = baseY + (100 * (i % Math.floor(GAMES.length * .5)));
-            }
-            */
-            
-            const classContainer = this.add.container(iconCoordinates[i].x, iconCoordinates[i].y);
+            const classContainer = this.add.container(gameTokens[i].x, gameTokens[i].y);
             const iconKey = GAMES[i] + '_icon';
             
             if (!this.textures.exists(iconKey)) {
@@ -169,7 +163,12 @@ export class MainMenu extends Scene
             }
 
             if(i > 0) {
-                // edge cases
+                /*
+                    Games states:    
+                        GAME_BEATEN
+                        GAME_LOCKED
+                        GAME_UNLOCKED
+                */
                 let circleBgColor = 0xffffff; // Default to white
                 let circleStrokeColor = 0x000000; // Default to black
 
@@ -196,10 +195,10 @@ export class MainMenu extends Scene
             let classIcon = null;
             if(i === 0 && playedGamesCount >= 12) {
                 // handle case where GameMiddleSchool is enabled
-                classIcon = this.add.image(0, 0, `GameMiddleSchoolEnabled_icon`).setScale(iconCoordinates[i].scale);
+                classIcon = this.add.image(0, 0, `GameMiddleSchoolEnabled_icon`).setScale(gameTokens[i].scale);
                 
             } else {
-                classIcon = this.add.image(0, 0, `${GAMES[i]}_icon`).setScale(iconCoordinates[i].scale);
+                classIcon = this.add.image(0, 0, `${GAMES[i]}_icon`).setScale(gameTokens[i].scale);
             }
             
             classContainer.add(classIcon);
@@ -207,7 +206,7 @@ export class MainMenu extends Scene
             if(i > 0) {
                 // add a text label for the game that's the name of the game
                 //make sure the label is above the icon in z-index
-                const labelTxt = iconCoordinates[i].abbrv;
+                const labelTxt = gameTokens[i].abbrv;
                 // label at bottom of circle
                 
                 const gameLabel = this.add.text(0, 110, labelTxt, { 
