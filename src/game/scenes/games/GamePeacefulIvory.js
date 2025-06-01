@@ -40,7 +40,7 @@ export class GamePeacefulIvory extends Phaser.Scene {
 
     // Set up score display
     this.scoreText = this.add.text(this.scale.width / 2, this.scale.height / 2 + 325, 'Score: 0', { 
-      fontSize: '24px', 
+      fontSize: '48px', 
       color: '#000000',
       stroke: '#ffffff',
       strokeThickness: 2
@@ -48,14 +48,14 @@ export class GamePeacefulIvory extends Phaser.Scene {
 
     // Result text display
     this.resultText = this.add.text(this.scale.width / 2, this.scale.height - 20, '', { 
-      fontSize: '20px', 
+      fontSize: '48px', 
       stroke: '#ffffff',
       strokeThickness: 2
     }).setOrigin(0.5);
 
     // Target image text
-    this.add.text(this.scale.width / 2, this.scale.height / 2 - 400, 'Find this image:', { 
-      fontSize: '20px', 
+    this.add.text(this.scale.width / 2, this.scale.height / 2 - 420, 'Find this image:', { 
+      fontSize: '48px', 
       color: '#000000',
       stroke: '#ffffff',
       strokeThickness: 2
@@ -72,7 +72,7 @@ export class GamePeacefulIvory extends Phaser.Scene {
 
     this.classroom = this.add.text(0,0, 'Peaceful Ivory', {
       fontSize: '48px',
-      color: '#fff',
+      color: '#000000',
     });
 
     // Center the message text
@@ -80,7 +80,7 @@ export class GamePeacefulIvory extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )

@@ -73,7 +73,7 @@ export class GameRosyRed extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )

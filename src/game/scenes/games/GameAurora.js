@@ -26,10 +26,12 @@ export class GameAurora extends Phaser.Scene {
 
     const heightPadding = 200;
 
-    this.add.text(centerX, 40, 'Wire Circuit Game', { fontSize: '48px', color: '#fff' }).setOrigin(0.5);
+    const yMod = 100;
+
+    this.add.text(centerX, 40 + yMod, 'Wire Circuit Game', { fontSize: '48px', color: '#fff' }).setOrigin(0.5);
     this.instructionsText = this.add.text(
       centerX,
-      120,
+      yMod + 120,
       'Match the wire outputs on the left to the terminal inputs on the right.',
       {
         fontSize: '36px', // Adjust font size if needed
@@ -40,11 +42,11 @@ export class GameAurora extends Phaser.Scene {
     ).setOrigin(0.5);
 
     this.wireButtons = this.wires.map((wire, index) => {
-      return this.createButton(centerX - 400, 250 + index * heightPadding, wire, () => this.selectWire(wire));
+      return this.createButton(centerX - 400, yMod + 250 + index * heightPadding, wire, () => this.selectWire(wire));
     });
 
     this.terminalButtons = this.terminals.map((terminal, index) => {
-      return this.createButton(centerX + 350, 250 + index * heightPadding, terminal, () => this.connectToTerminal(terminal));
+      return this.createButton(centerX + 350, yMod + 250 + index * heightPadding, terminal, () => this.connectToTerminal(terminal));
     });
 
     // Adjust the positions of the buttons to be next to each other with 3px padding
@@ -52,14 +54,14 @@ export class GameAurora extends Phaser.Scene {
     const buttonWidth = 100; // Approximate width of each button
     const totalWidth = buttonWidth * 2 + buttonSpacing;
 
-    this.checkButton = this.createButton((centerX - totalWidth / 2) - 300, centerY, 'Check Circuit', () => this.checkCircuit());
-    this.resetButton = this.createButton((centerX + totalWidth / 2) - buttonWidth + 150, centerY, 'Reset Game', () => this.resetGame());
+    this.checkButton = this.createButton((centerX - totalWidth / 2) - 300, centerY + yMod, 'Check Circuit', () => this.checkCircuit());
+    this.resetButton = this.createButton((centerX + totalWidth / 2) - buttonWidth + 150, centerY + yMod, 'Reset Game', () => this.resetGame());
 
-    this.messageText = this.add.text(centerX, centerY - 100, '', { fontSize: '48px', color: '#fff' }).setOrigin(0.5);
+    this.messageText = this.add.text(centerX, centerY - 100 + yMod, '', { fontSize: '48px', color: '#fff' }).setOrigin(0.5);
 
     this.graphics = this.add.graphics();
     this.resetGame();    
-    this.classroom = this.add.text(0,0, 'Aurora', {
+    this.classroom = this.add.text(0,20, 'Aurora', {
       fontSize: '48px',
       color: '#fff',
     });
@@ -69,7 +71,7 @@ export class GameAurora extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )

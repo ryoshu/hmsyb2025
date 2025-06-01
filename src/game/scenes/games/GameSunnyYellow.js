@@ -26,15 +26,15 @@ export class GameSunnyYellow extends Phaser.Scene {
     this.train.setData('moving', false);
 
     // Add timer text
-    this.timerText = this.add.text(this.scale.width / 2, 40, 'Time: 30', {
+    this.timerText = this.add.text(this.scale.width / 2, 80, 'Time: 30', {
       fontSize: '48px',
       color: '#fff',
       padding: { x: 10, y: 5 },
     }).setOrigin(0.5, 0); // Center horizontally and align top vertically
 
     // Add instruction text
-    this.instructionText = this.add.text(this.scale.width / 2, 150, 'Tap the train to get home!', {
-      fontSize: '32px',
+    this.instructionText = this.add.text(this.scale.width / 2, 190, 'Tap the train to get home!', {
+      fontSize: '48px',
       color: '#fff',
       fontStyle: 'bold',
       align: 'center',
@@ -71,7 +71,7 @@ export class GameSunnyYellow extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )

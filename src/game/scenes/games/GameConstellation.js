@@ -76,7 +76,7 @@ export class GameConstellation extends Phaser.Scene {
     this.startButton.on('pointerdown', () => this.startGame());    
     this.classroom = this.add.text(0,0, 'Constellation', {
       fontSize: '48px',
-      color: '#fff',
+      color: '#000000',
     });
 
     // Center the message text
@@ -84,7 +84,7 @@ export class GameConstellation extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )

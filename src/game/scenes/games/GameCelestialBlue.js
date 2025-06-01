@@ -12,7 +12,7 @@ export class GameCelestialBlue extends Phaser.Scene {
   create() {
     // Add message text
     this.message = this.add.text(0, 0, 'Match the block pattern in the grid!', {
-      fontSize: '32px',
+      fontSize: '48px',
       color: '#000',
     });
     
@@ -43,7 +43,7 @@ export class GameCelestialBlue extends Phaser.Scene {
 
     this.classroom = this.add.text(0,0, 'Celestial Blue', {
       fontSize: '48px',
-      color: '#fff',
+      color: '#000000',
     });
 
     // Center the message text
@@ -51,7 +51,7 @@ export class GameCelestialBlue extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )

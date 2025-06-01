@@ -48,13 +48,13 @@ export class GameHarmoniousOrange extends Phaser.Scene {
 
         // Set up the timer text
         this.timerText = this.add.text(centerX, centerY + 320, 'Time Left: 10.0s', {
-            font: '20px',
+            font: '48px',
             fill: '#333333'
         }).setOrigin(0.5);
 
         // Set up the message text
         this.messageText = this.add.text(centerX, centerY + 350, '', {
-            font: '24px',
+            font: '48px',
             fill: '#ff6347'
         }).setOrigin(0.5);
 
@@ -76,7 +76,7 @@ export class GameHarmoniousOrange extends Phaser.Scene {
 
         this.classroom = this.add.text(0,0, 'Harmonious Orange', {
             fontSize: '48px',
-            color: '#fff',
+            color: '#000000',
         });
     
         // Center the message text
@@ -84,7 +84,7 @@ export class GameHarmoniousOrange extends Phaser.Scene {
             this.classroom,
             this.add.zone(
             this.cameras.main.width / 2,
-            20,
+            40,
             this.cameras.main.width,
             this.cameras.main.height
             )
