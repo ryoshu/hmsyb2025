@@ -272,6 +272,27 @@ export class MainMenu extends Scene
         }).setOrigin(0.5);
 
         this.scale.on('resize', this.resizeGame, this);
+
+        // Collapse mobile URL bar on scene create
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            setTimeout(() => {
+                window.scrollTo(0, 1);
+            }, 100);
+
+            // Also collapse on orientation change
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    window.scrollTo(0, 1);
+                }, 100);
+            });
+
+            // Also collapse on window resize
+            window.addEventListener('resize', () => {
+                setTimeout(() => {
+                    window.scrollTo(0, 1);
+                }, 100);
+            });
+        }
     }
 
     resizeGame(gameSize, baseSize, displaySize, resolution) {
