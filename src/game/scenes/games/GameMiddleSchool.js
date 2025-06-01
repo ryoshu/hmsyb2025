@@ -7,7 +7,8 @@ export class GameMiddleSchool extends Phaser.Scene {
   }
 
   preload() {
-  
+    this.load.image('GameMiddleSchoolEnabled_icon', 'assets/middle_school.png');
+    this.load.image('player', 'assets/ms_player.png');
   }
 
   create() {
@@ -18,12 +19,14 @@ export class GameMiddleSchool extends Phaser.Scene {
     this.canvasHeight = this.sys.game.config.height;
 
     // Player setup
-    this.player = this.add.rectangle(this.canvasWidth / 2, this.canvasHeight - 200, 60, 60, 0x0000ff);
+    //this.player = this.add.rectangle(this.canvasWidth / 2, this.canvasHeight - 200, 60, 60, 0x0000ff);
+    this.player = this.add.image(this.canvasWidth / 2, this.canvasHeight - 200, 'player').setScale(0.15).setRotation(-(Math.PI/2));
     this.player.health = 100;
     this.player.speed = 300;
 
     // Boss setup
-    this.boss = this.add.circle(this.canvasWidth / 2, this.canvasHeight / 2, 50, 0x00ff00);
+    // this.boss = this.add.circle(this.canvasWidth / 2, this.canvasHeight / 2, 50, 0x00ff00);
+    this.boss = this.add.image(this.canvasWidth / 2, this.canvasHeight / 2, 'GameMiddleSchoolEnabled_icon').setScale(0.3);
     this.boss.maxHealth = 300;
     this.boss.health = this.boss.maxHealth;
     this.boss.lasers = [];
@@ -42,11 +45,18 @@ export class GameMiddleSchool extends Phaser.Scene {
     // Create virtual joystick
     this.createVirtualJoystick();
 
+    // Boss health text
+    this.add.text(this.canvasWidth / 2, 100, 'VIRUS HEALTH', {
+      fontSize: '28px',
+      color: '#ffffff',
+      align: 'center',
+      wordWrap: { width: this.canvasWidth - 100 }
+    }).setOrigin(0.5);
+
     // Directions
-    this.add.text(this.canvasWidth / 2, 100, 'Use the joystick to get to the yellow spots!', {
+    this.add.text(this.canvasWidth / 2, this.canvasHeight - 20, 'Use the joystick or keyboard to get to the yellow spots!', {
       fontSize: '28px',
       color: '#ffff00',
-      fontFamily: 'Arial',
       align: 'center',
       wordWrap: { width: this.canvasWidth - 100 }
     }).setOrigin(0.5);
@@ -269,11 +279,24 @@ export class GameMiddleSchool extends Phaser.Scene {
   createDamageSpot() {
     const spotRadius = 30;
     let x, y;
-    const minDistance = this.boss.radius + spotRadius + 100;
 
+    // Define the playable area boundaries (avoid UI and joystick)
+    const topMargin = 120; // Avoid boss health bar and text
+    const bottomMargin = 180; // Avoid joystick and directions text
+    const leftMargin = spotRadius;
+    const rightMargin = spotRadius;
+
+    // If boss is an image, estimate its radius for spacing
+    const bossRadius = (this.boss.displayWidth || 100) / 2;
+    const minDistance = bossRadius + spotRadius + 100;
+
+    let attempts = 0;
     do {
-      x = Phaser.Math.Between(spotRadius, this.canvasWidth - spotRadius);
-      y = Phaser.Math.Between(spotRadius, this.canvasHeight - spotRadius - 150);
+      x = Phaser.Math.Between(leftMargin, this.canvasWidth - rightMargin);
+      y = Phaser.Math.Between(topMargin, this.canvasHeight - bottomMargin);
+      attempts++;
+      // Prevent infinite loop in rare cases
+      if (attempts > 100) break;
     } while (Phaser.Math.Distance.Between(x, y, this.boss.x, this.boss.y) < minDistance);
 
     if (this.damageSpot) this.damageSpot.destroy();
@@ -289,14 +312,33 @@ export class GameMiddleSchool extends Phaser.Scene {
     const left = this.cursors.left.isDown || (this.joyStickCursors && this.joyStickCursors.left.isDown);
     const right = this.cursors.right.isDown || (this.joyStickCursors && this.joyStickCursors.right.isDown);
 
-    if (up) this.player.y -= speed;
-    if (down) this.player.y += speed;
-    if (left) this.player.x -= speed;
-    if (right) this.player.x += speed;
+    if (up) {
+      this.player.y -= speed;
+      // -(Math.PI/2)
+      //this.player.setRotation(-(Math.PI/2));
+    }
+    if (down) {
+      this.player.y += speed;
+      // (Math.PI/2)
+      //this.player.setRotation(Math.PI/2);
+    }
+    if (left) {
+      this.player.x -= speed;
+      // -(Math.PI/)
+      //this.player.setRotation(-(Math.PI));
+    }
+    if (right) {
+      this.player.x += speed;
+      // 0
+      //this.player.setRotation(0);
+    }
 
-    // Clamp player within bounds
-    this.player.x = Phaser.Math.Clamp(this.player.x, 0, this.canvasWidth);
-    this.player.y = Phaser.Math.Clamp(this.player.y, 0, this.canvasHeight);
+    // Clamp player within bounds (account for player size)
+    console.log(`Player size: (${this.player.width}, ${this.player.height})`);
+    const halfWidth = 50;
+    const halfHeight = 50;
+    this.player.x = Phaser.Math.Clamp(this.player.x, halfWidth, this.canvasWidth - halfWidth);
+    this.player.y = Phaser.Math.Clamp(this.player.y, halfHeight, this.canvasHeight - halfHeight);
   }
 
   shootLaser() {
