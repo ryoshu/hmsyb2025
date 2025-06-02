@@ -147,7 +147,7 @@ export class GameHarmoniousOrange extends Phaser.Scene {
         this.gameActive = false;
         this.increaseTimer.remove();
         this.winCheckTimer.remove();
-        this.messageText.setText('You Win! You kept the geyser under control!');
+        this.messageText.setText('You Win!\nYou kept the geyser under control!').setAlign('center');
         this.timerText.setText('');
 
         // Reset game variables
