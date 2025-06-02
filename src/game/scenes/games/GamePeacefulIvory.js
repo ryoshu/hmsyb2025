@@ -19,6 +19,7 @@ export class GamePeacefulIvory extends Phaser.Scene {
     ];
     this.targetImageSrc = '';
     this.resultDisplayTimer = null;
+    
   }
 
   preload() {
@@ -29,11 +30,13 @@ export class GamePeacefulIvory extends Phaser.Scene {
     
     // Load any additional assets
     //this.load.image('background', 'https://phaser.io/images/tutorials/52/light-grass.png');
+    this.load.image('background', './assets/monuments.png');
   }
 
   create() {
     // Remove the background image setup
-    // this.add.image(400, 300, 'background').setScale(2);
+    this.add.image(0, 0, 'background').setOrigin(0,0).setScale(3);
+    this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0xffffff, 0.75).setOrigin(0, 0);
 
     // Set up game container
     this.createGameBoard();

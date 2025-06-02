@@ -7,9 +7,13 @@ export class GameCelestialBlue extends Phaser.Scene {
 
   preload() {
     // Preload assets if needed (e.g., images for blocks)
+    this.load.image('city-grid', './assets/city-grid.jpg');
   }
 
   create() {
+    this.add.image(0, 0, 'city-grid').setOrigin(0, 0).setScale(2.5);
+    this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0xffffff, 0.75).setOrigin(0, 0);
+
     // Add message text
     this.message = this.add.text(0, 0, 'Match the block pattern in the grid!', {
       fontSize: '48px',
@@ -189,7 +193,7 @@ export class GameCelestialBlue extends Phaser.Scene {
 
     // Check pattern button
     const checkButton = this.add.text(0, 0, '✅ Check Pattern', {
-      fontSize: '24px',
+      fontSize: '48px',
       backgroundColor: '#ccc',
       padding: { x: 10, y: 5 },
     }).setInteractive();
