@@ -399,6 +399,7 @@ export class GameMiddleSchool extends Phaser.Scene {
       }
     }
   }
+  //Add defeat animation
 
   gameWin() {
     this.gameWon = true;
