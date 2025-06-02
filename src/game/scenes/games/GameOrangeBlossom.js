@@ -216,7 +216,7 @@ export class GameOrangeBlossom extends Scene {
         // Create header UI - positioned relative to screen size
         const headerY = Math.max(50, this.gameHeight * 0.08);
         const levelTitle = this.add.text(this.centerX, headerY, `Level ${level}`, this.titleStyle).setOrigin(0.5);
-        this.timerText = this.add.text(this.centerX, headerY + 40, 'Time: ', this.textStyle).setOrigin(0.5);
+        this.timerText = this.add.text(this.centerX, headerY + 40, '', this.textStyle).setOrigin(0.5);
         this.messageText = this.add.text(this.centerX, headerY + 70, '', this.textStyle).setOrigin(0.5);
         this.instructions = this.add.text(this.centerX, headerY + 100, 'Match the planets and moons!', this.textStyle).setOrigin(0.5);
         this.gameGroup.addMultiple([levelTitle, this.timerText, this.messageText, this.instructions]);
@@ -348,7 +348,7 @@ export class GameOrangeBlossom extends Scene {
     }
     
     updateTimerDisplay() {
-        this.timerText.setText(`Time: ${this.timeLeft}`);
+        // this.timerText.setText(`Time: ${this.timeLeft}`);
     }
     
     showVictoryScreen() {
@@ -480,7 +480,7 @@ export class GameOrangeBlossom extends Scene {
         const title = this.add.text(this.centerX, this.centerY - 150, 'Congratulations! 🎉', this.titleStyle).setOrigin(0.5);
         const stars = this.add.text(this.centerX, this.centerY - 80, '⭐ ⭐ ⭐', { fontSize: '50px', fill: '#FFD700' }).setOrigin(0.5);
         const subtitle = this.add.text(this.centerX, this.centerY - 20, 'You matched all planets and moons!', this.textStyle).setOrigin(0.5);
-        const scoreText = this.add.text(this.centerX, this.centerY + 20, `Total Points: ${this.score}`, this.textStyle).setOrigin(0.5);
+        // const scoreText = this.add.text(this.centerX, this.centerY + 20, `Total Points: ${this.score}`, this.textStyle).setOrigin(0.5);
         
         /*
         const playAgainButton = this.add.text(this.centerX, this.centerY + 100, 'Play Again', this.buttonStyle)
@@ -490,7 +490,8 @@ export class GameOrangeBlossom extends Scene {
         */
 
         // this.finalGroup.addMultiple([title, stars, subtitle, scoreText, playAgainButton]);
-        this.finalGroup.addMultiple([title, stars, subtitle, scoreText]);
+        // this.finalGroup.addMultiple([title, stars, subtitle, scoreText]);
+        this.finalGroup.addMultiple([title, stars, subtitle]);
     }
     
     clearAllGroups() {

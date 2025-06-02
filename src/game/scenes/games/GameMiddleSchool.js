@@ -417,7 +417,8 @@ export class GameMiddleSchool extends Phaser.Scene {
 
     // Got to main menu after short delay
     this.time.delayedCall(3000, () => {
-      this.scene.start('MainMenu'); // Replace 'MainMenu' with the actual key of your main menu scene
+      // this.scene.start('MainMenu');
+      this.scene.start('GameWin');
     });
   }
 

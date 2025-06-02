@@ -60,34 +60,44 @@ export class Story extends Scene
                 } else {
                     // Stop the timer when the text is fully displayed
                     this.typingTimer.remove();
-
-                    // add green button with the text "Save The Yearbook!"
-                    // make the button have a green background with black text
-                    const buttonY = this.msgText.y + this.msgText.height + 100;
-                    const buttonBackground = this.add.rectangle(screenWidth / 2, buttonY, 
-                        400, 80, 0x00ff00)
-                        .setOrigin(0.5)
-                        .setInteractive();
-                    //buttonBackground.setStrokeStyle(4, 0x000000);
-                    buttonBackground.on('pointerover', () => {
-                        buttonBackground.setFillStyle(0x00cc00); // Darker green on hover
-                    });
-                    buttonBackground.on('pointerout', () => {
-                        buttonBackground.setFillStyle(0x00ff00); // Original green on hover out
-                    });
-                    // add text to the button
-                    this.add.text(screenWidth / 2, buttonY, 'Save The Yearbook!', {
-                        fontSize: 32, color: '#000000',
-                        align: 'center'
-                    }).setOrigin(0.5);
-                    // make the button interactive
-                    buttonBackground.on('pointerdown', () => {
-                        this.scene.start('MainMenu');
-                    });
                 }
                 // You can add more logic here if needed
             },
             loop: true // Set to true if you want it to repeat
+        });
+
+        // add green button with the text "Save The Yearbook!"
+        // make the button have a green background with black text
+        const buttonY = screenHeight - 200;
+        const buttonBackground = this.add.rectangle(screenWidth / 2, buttonY, 
+            400, 80, 0x00ff00)
+            .setOrigin(0.5)
+            .setInteractive();
+        //buttonBackground.setStrokeStyle(4, 0x000000);
+        buttonBackground.on('pointerover', () => {
+            buttonBackground.setFillStyle(0x00cc00); // Darker green on hover
+        });
+        buttonBackground.on('pointerout', () => {
+            buttonBackground.setFillStyle(0x00ff00); // Original green on hover out
+        });
+        // add text to the button
+        const buttonText = this.add.text(screenWidth / 2, buttonY, 'Skip Intro', {
+            fontSize: 32, color: '#000000',
+            align: 'center'
+        }).setOrigin(0.5);
+        // make the button interactive
+        buttonBackground.on('pointerdown', () => {
+            this.scene.start('MainMenu');
+        });
+
+        buttonText.alpha = 0; // Start invisible
+
+        // Fade in button and text together
+        this.tweens.add({
+            targets: [buttonBackground, buttonText],
+            alpha: 1,
+            duration: 1000,
+            ease: 'Power2'
         });
     }
 

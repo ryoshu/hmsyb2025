@@ -9,9 +9,9 @@ export class GameWin extends Scene
 
     create ()
     {
-        this.cameras.main.setBackgroundColor(0x00ff00);
+        this.cameras.main.setBackgroundColor(0x000000);
 
-        this.add.image(512, 384, 'background').setAlpha(0.5);
+        // this.add.image(512, 384, 'background').setAlpha(0.5);
 
         const storylineText = `
 And with that, the virus was defeated. 
@@ -21,20 +21,33 @@ The classrooms showed all their appreciation and gratitude,
 and the day was saved.
         `;
 
-        const textObject = this.add.text(512, 2000, storylineText, {
-            fontFamily: 'Arial Black',
+        const textObject = this.add.text(0, 0, storylineText, {
             fontSize: 58,
-            color: '#000000',
-            stroke: '#ffffff',
-            strokeThickness: 6,
+            color: '#00ff00',
             align: 'center',
-            wordWrap: { width: 600 }
+            wordWrap: { width: 600 },
         }).setOrigin(0.5);
+        
+        textObject.setScale(1, 0.9); // Wider and squished vertically
+        //textObject.setAngle(-20);      // Tilt backwards
 
-        // Tween to scroll the text upward
+        // Center the message text
+        Phaser.Display.Align.In.Center(
+            textObject,
+            this.add.zone(
+                this.cameras.main.width / 2,
+                this.cameras.main.height + textObject.height / 2 - 100,
+                this.cameras.main.width,
+                this.cameras.main.height
+            )
+        );
+
+        // Tween to scroll the text upward and shrink it for perspective
         this.tweens.add({
             targets: textObject,
             y: -500,
+            scaleX: 0.5,
+            scaleY: 0.1,
             duration: 30000, // 30 seconds to scroll
             ease: 'Linear',
             onComplete: () => {
