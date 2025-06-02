@@ -74,7 +74,7 @@ export class GameOceanBlue extends Phaser.Scene {
     this.player.body.debugShowVelocity = false;
 
     // Create score text
-    this.scoreText = this.add.text(20, 20, 'Tornadoes Caught: 0', {
+    this.scoreText = this.add.text(20, 80, 'Tornadoes Caught: 0', {
       fontSize: '48px',
       color: '#fff'
     });
@@ -84,7 +84,7 @@ export class GameOceanBlue extends Phaser.Scene {
       this.scoreText,
       this.add.zone(
         this.cameras.main.width / 2,
-        40,
+        100,
         this.cameras.main.width,
         this.cameras.main.height
       )
@@ -121,7 +121,7 @@ export class GameOceanBlue extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )

@@ -19,6 +19,7 @@ export class GamePeacefulIvory extends Phaser.Scene {
     ];
     this.targetImageSrc = '';
     this.resultDisplayTimer = null;
+    
   }
 
   preload() {
@@ -29,18 +30,20 @@ export class GamePeacefulIvory extends Phaser.Scene {
     
     // Load any additional assets
     //this.load.image('background', 'https://phaser.io/images/tutorials/52/light-grass.png');
+    this.load.image('background', './assets/monuments.png');
   }
 
   create() {
     // Remove the background image setup
-    // this.add.image(400, 300, 'background').setScale(2);
+    this.add.image(0, 0, 'background').setOrigin(0,0).setScale(3);
+    this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0xffffff, 0.75).setOrigin(0, 0);
 
     // Set up game container
     this.createGameBoard();
 
     // Set up score display
     this.scoreText = this.add.text(this.scale.width / 2, this.scale.height / 2 + 325, 'Score: 0', { 
-      fontSize: '24px', 
+      fontSize: '48px', 
       color: '#000000',
       stroke: '#ffffff',
       strokeThickness: 2
@@ -48,14 +51,14 @@ export class GamePeacefulIvory extends Phaser.Scene {
 
     // Result text display
     this.resultText = this.add.text(this.scale.width / 2, this.scale.height - 20, '', { 
-      fontSize: '20px', 
+      fontSize: '48px', 
       stroke: '#ffffff',
       strokeThickness: 2
     }).setOrigin(0.5);
 
     // Target image text
-    this.add.text(this.scale.width / 2, this.scale.height / 2 - 400, 'Find this image:', { 
-      fontSize: '20px', 
+    this.add.text(this.scale.width / 2, this.scale.height / 2 - 420, 'Find this image:', { 
+      fontSize: '48px', 
       color: '#000000',
       stroke: '#ffffff',
       strokeThickness: 2
@@ -72,7 +75,7 @@ export class GamePeacefulIvory extends Phaser.Scene {
 
     this.classroom = this.add.text(0,0, 'Peaceful Ivory', {
       fontSize: '48px',
-      color: '#fff',
+      color: '#000000',
     });
 
     // Center the message text
@@ -80,7 +83,7 @@ export class GamePeacefulIvory extends Phaser.Scene {
       this.classroom,
       this.add.zone(
         this.cameras.main.width / 2,
-        20,
+        40,
         this.cameras.main.width,
         this.cameras.main.height
       )
