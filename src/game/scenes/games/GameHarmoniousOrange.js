@@ -7,9 +7,13 @@ export class GameHarmoniousOrange extends Phaser.Scene {
 
     preload() {
         // No assets to preload
+        this.load.image('geyser', 'assets/geyser.jpg'); // Placeholder for geyser image
     }
 
     create() {
+        this.add.image(0, 0, 'geyser').setOrigin(0, 0).setScale(2);
+        this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0xffffff, 0.75).setOrigin(0, 0);
+
         this.geyserHeight = 0;
         this.maxHeight = 400;
         this.winTimer = 0;
