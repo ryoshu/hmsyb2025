@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { PerspectivePipeline } from '../pipelines/PerspectivePipeline';
 
 export class GameWin extends Scene
 {
@@ -25,10 +26,11 @@ and the day was saved.
             fontSize: 58,
             color: '#00ff00',
             align: 'center',
-            wordWrap: { width: 600 },
+            wordWrap: { width: 1000 },
+            lineSpacing: 20,
         }).setOrigin(0.5);
         
-        textObject.setScale(1, 0.9); // Wider and squished vertically
+        //textObject.setScale(1, 0.9); // Wider and squished vertically
         //textObject.setAngle(-20);      // Tilt backwards
 
         // Center the message text
@@ -48,15 +50,16 @@ and the day was saved.
             y: -500,
             scaleX: 0.5,
             scaleY: 0.1,
-            duration: 30000, // 30 seconds to scroll
+            duration: 20000, // 30 seconds to scroll
             ease: 'Linear',
             onComplete: () => {
-                this.add.text(512, 500, 'Tap to continue...', {
+                this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2, 'Tap to continue...', {
                     fontSize: 32,
                     color: '#fff'
                 }).setOrigin(0.5);
             }
         });
+        textObject.setPipeline('perspective');
 
         // Proceed on tap/click after scroll completes
         this.input.once('pointerdown', () => {

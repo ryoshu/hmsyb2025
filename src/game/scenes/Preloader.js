@@ -58,7 +58,7 @@ export class Preloader extends Scene
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         
         // this.scene.start('MainMenu');
-        // this.scene.start('GameIntro');
-        this.scene.start('GameWin');
+        this.scene.start('GameIntro');
+        // this.scene.start('GameWin');
     }
 }
