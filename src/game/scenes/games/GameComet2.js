@@ -40,15 +40,15 @@ export class GameComet2 extends Phaser.Scene {
         console.log(tile);
         const key = tile === 1 ? 'wall' : 'path';
         console.log(key);
-        this.add.image(px, py, key).setOrigin(0).setDisplaySize(this.tileSize, this.tileSize);
+        
 
-        /*
         if (tile === 1) {
           this.wallGroup.create(px + this.tileSize / 2, py + this.tileSize / 2, 'COM-1')
             .setDisplaySize(this.tileSize, this.tileSize)
             .refreshBody();
         }
-            */
+        
+        this.add.image(px, py, key).setOrigin(0).setDisplaySize(this.tileSize, this.tileSize);
       }
     }
 
