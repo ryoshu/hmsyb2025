@@ -16,6 +16,7 @@ import { GameConstellation } from './scenes/games/GameConstellation'; // lower e
 import { GameGalaxy } from './scenes/games/GameGalaxy'; // lower el
 
 import { GameComet } from './scenes/games/GameComet'; // upper el
+import { GameComet2 } from './scenes/games/GameComet2';
 
 import { GameMiddleSchool } from './scenes/games/GameMiddleSchool'; // middle school
 
@@ -32,5 +33,6 @@ export const GAMES = [
     GameConstellation,
     GameGalaxy,
     GameComet,
+    GameComet2,
     GameMiddleSchool,
 ];
