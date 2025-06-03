@@ -47,6 +47,7 @@ export class Story extends Scene
         
         let text = 'It was the day of the yearbook launch but then . . . An evil virus attacked. It took control of the yearbook, with the ability to delete the entire book. And now it’s time for you to help stop the virus. ';
 
+        
         // phaser timer loop
         this.typingTimer = this.time.addEvent({
             delay: 10, // 1 second
