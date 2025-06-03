@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 export class GameComet2 extends Phaser.Scene {
   constructor() {
     super('GameComet2');
-    this.tileSize = 48;
+    this.tileSize = 108;
     this.maze = [
       [1,1,1,1,1,1,1,1,1,1],
       [1,0,0,0,1,0,0,0,0,1],
@@ -87,7 +87,7 @@ export class GameComet2 extends Phaser.Scene {
   }
 
   handlePlayerMovement() {
-    const speed = 100;
+    const speed = 150;
     this.player.setVelocity(0);
 
     if (this.cursors.left.isDown) {
@@ -128,9 +128,9 @@ export class GameComet2 extends Phaser.Scene {
   showWinMessage() {
     const centerX = this.scale.width / 2;
     const centerY = this.scale.height / 2;
-    this.add.text(centerX, centerY, 'You Win!', {
-      fontSize: '32px',
-      color: '#0f0'
+    this.add.text(centerX, 1500, 'You Win!', {
+      fontSize: '50px',
+      color: '#ffffff'
     }).setOrigin(0.5);
 
     this.time.delayedCall(3000, () => {
