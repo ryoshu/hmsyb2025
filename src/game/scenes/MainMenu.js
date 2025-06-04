@@ -1,7 +1,9 @@
 import { Scene } from 'phaser';
 
-export class MainMenu extends Scene
-{
+export class MainMenu extends Scene {
+    static GAME_BEATEN = 2;
+    static GAME_LOCKED = 1;
+    static GAME_UNLOCKED = 0;
 
     constructor () {
         super('MainMenu');
@@ -30,11 +32,67 @@ export class MainMenu extends Scene
         }
     }
 
+    getGameState () {
+        const gameState = this.registry.get('gameState');
+        if (gameState) {
+            // If gameState exists, restore it
+            console.log('Game state initiialized.');
+            return gameState;
+        }
+        
+        // If not, initialize an empty gameState
+        const initialGameState = [
+            {name: 'GameMiddleSchool', abbrv: 'MS', state: MainMenu.GAME_LOCKED}, // GameMiddleSchool
+            {name: 'GameComet', abbrv: 'COM', state: MainMenu.GAME_LOCKED}, // GameComet
+            {name: 'GameGalaxy', abbrv: 'GAL', state: MainMenu.GAME_LOCKED}, // GameGalaxy
+            {name: 'GameConstellation', abbrv: 'CNS', state: MainMenu.GAME_LOCKED}, // GameConstellation
+            {name: 'GameAurora', abbrv: 'AUR', state: MainMenu.GAME_LOCKED}, // GameAurora
+            {name: 'GameOceanBlue', abbrv: 'OB', state: MainMenu.GAME_LOCKED}, // GameOceanBlue
+            {name: 'GameSereneIndigo', abbrv: 'SI', state: MainMenu.GAME_LOCKED}, // GameSereneIndigo
+            {name: 'GamePeacefulIvory', abbrv: 'PI', state: MainMenu.GAME_LOCKED}, // GamePeacefulIvory
+            {name: 'GameHarmoniousOrange', abbrv: 'HO', state: MainMenu.GAME_LOCKED}, // GameHarmoniousOrange
+            {name: 'GameCelestialBlue', abbrv: 'CB', state: MainMenu.GAME_LOCKED}, // GameCelestialBlue 
+            {name: 'GameSunnyYellow', abbrv: 'SY', state: MainMenu.GAME_LOCKED}, // GameSunnyYellow
+            {name: 'GameOrangeBlossom', abbrv: 'ORB', state: MainMenu.GAME_LOCKED}, // GameOrangeBlossom
+            {name: 'GameRosyRed', abbrv: 'RR', state: MainMenu.GAME_UNLOCKED}, // GameRosyRed
+        ];
+        this.registry.set('gameState', initialGameState);
+        console.log('Game state loaded from localStorage.');
+        return initialGameState;
+    }
+
+    resetGameState () {
+        // Save the played games registry to localStorage
+        this.registry.set('gameState', {});
+        localStorage.removeItem('gameState');
+        console.log('Game state reset.');
+        this.scene.restart();
+    }
+
+    saveGameState () {
+        // Save the played games registry to localStorage
+        const gameState = this.registry.get('gameState');
+        localStorage.setItem('gameState', JSON.stringify(gameState));
+        console.log('Game state saved to localStorage.');
+    }
+
+    cheatModeState () {
+        // set all gameState objects to GAME_BEATEN
+        const gameState = this.getGameState();
+        for (let i = 0; i < gameState.length; i++) {
+            gameState[i].state = MainMenu.GAME_BEATEN;
+        }
+        this.registry.set('gameState', gameState);
+        localStorage.setItem('gameState', JSON.stringify(gameState));
+        console.log('Cheat mode activated: All games set to unlocked.');
+    }
 
     create () {
-
+        this.gameState = this.getGameState();
+        console.log('Game state:', this.gameState);
         // add a method to reset the played games registry when the 'X' key is pressed
         this.input.keyboard.on('keydown-X', () => {
+            this.resetGameState();
             this.registry.set('playedGames', {});
             localStorage.removeItem('playedGames');
             console.log('Played games reset.');
@@ -128,19 +186,19 @@ export class MainMenu extends Scene
         const GAME_UNLOCKED = 2;
 
         const gameTokens = [
-            {x : centerX + 150, y: this.canvasHeight - 150, scale: 1.15, abbrv: 'RR', state: GAME_UNLOCKED}, // GameRosyRed
-            {x : centerX - 150,  y: this.canvasHeight - 150, scale: 1.15, abbrv: 'ORB', state: GAME_LOCKED}, // GameOrangeBlossom 
-            {x : centerX + 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'SY', state: GAME_LOCKED}, // GameSunnyYellow
-            {x : centerX, y: this.canvasHeight - 400, scale: .5, abbrv: 'CB', state: GAME_LOCKED}, // GameCelestialBlue
-            {x : centerX - 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'HO', state: GAME_LOCKED}, // GameHarmoniousOrange
-            {x : centerX + 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'PI', state: GAME_LOCKED}, // GamePeacefulIvory
-            {x : centerX, y: this.canvasHeight - 650, scale: .75, abbrv: 'SI', state: GAME_LOCKED}, // GameSereneIndigo
-            {x : centerX - 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'OB', state: GAME_LOCKED}, // GameOceanBlue
-            {x : centerX + 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'AUR', state: GAME_LOCKED}, // GameAurora
-            {x : centerX, y: this.canvasHeight - 900, scale: .75, abbrv: 'CNS', state: GAME_LOCKED}, // GameConstellation
-            {x : centerX - 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'GAL', state: GAME_LOCKED}, // GameGalaxy
-            {x : centerX, y: this.canvasHeight - 1150, scale: .75, abbrv: 'COM', state: GAME_LOCKED}, // GameComet
-            {x : centerX, y: this.canvasHeight - 1650, scale: 1, abbrv: 'MS', state: GAME_LOCKED}, // GameMiddleSchool
+            {x : centerX + 150, y: this.canvasHeight - 150, scale: 1.15, abbrv: 'RR', state: MainMenu.GAME_UNLOCKED}, // GameRosyRed
+            {x : centerX - 150,  y: this.canvasHeight - 150, scale: 1.15, abbrv: 'ORB', state: MainMenu.GAME_LOCKED}, // GameOrangeBlossom 
+            {x : centerX + 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'SY', state: MainMenu.GAME_LOCKED}, // GameSunnyYellow
+            {x : centerX, y: this.canvasHeight - 400, scale: .5, abbrv: 'CB', state: MainMenu.GAME_LOCKED}, // GameCelestialBlue
+            {x : centerX - 250, y: this.canvasHeight - 450, scale: .75, abbrv: 'HO', state: MainMenu.GAME_LOCKED}, // GameHarmoniousOrange
+            {x : centerX + 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'PI', state: MainMenu.GAME_LOCKED}, // GamePeacefulIvory
+            {x : centerX, y: this.canvasHeight - 650, scale: .75, abbrv: 'SI', state: MainMenu.GAME_LOCKED}, // GameSereneIndigo
+            {x : centerX - 275, y: this.canvasHeight - 700, scale: .5, abbrv: 'OB', state: MainMenu.GAME_LOCKED}, // GameOceanBlue
+            {x : centerX + 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'AUR', state: MainMenu.GAME_LOCKED}, // GameAurora
+            {x : centerX, y: this.canvasHeight - 900, scale: .75, abbrv: 'CNS', state: MainMenu.GAME_LOCKED}, // GameConstellation
+            {x : centerX - 300, y: this.canvasHeight - 950, scale: .75, abbrv: 'GAL', state: MainMenu.GAME_LOCKED}, // GameGalaxy
+            {x : centerX, y: this.canvasHeight - 1150, scale: .75, abbrv: 'COM', state: MainMenu.GAME_LOCKED}, // GameComet
+            {x : centerX, y: this.canvasHeight - 1650, scale: 1, abbrv: 'MS', state: MainMenu.GAME_LOCKED}, // GameMiddleSchool
         ]
 
         gameTokens.reverse(); // Reverse the coordinates to match the reversed game order

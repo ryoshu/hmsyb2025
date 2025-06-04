@@ -27,7 +27,7 @@ export class GameConstellation extends Phaser.Scene {
 
   create() {
     // Add black background
-    // this.add.rectangle(0, 0, this.sys.game.config.width, this.sys.game.config.height, 0x000000).setOrigin(0, 0);
+    this.add.rectangle(0, 0, this.sys.game.config.width, this.sys.game.config.height, 0xffffff).setOrigin(0, 0);
 
     // Get game dimensions for centering
     const centerX = this.cameras.main.width / 2;
